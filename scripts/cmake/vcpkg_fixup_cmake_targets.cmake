@@ -90,6 +90,7 @@ function(vcpkg_fixup_cmake_targets)
 
     file(GLOB_RECURSE UNUSED_FILES
         "${DEBUG_SHARE}/*[Tt]argets.cmake"
+        "${DEBUG_SHARE}/*Exports.cmake"
         "${DEBUG_SHARE}/*[Cc]onfig.cmake"
         "${DEBUG_SHARE}/*[Cc]onfigVersion.cmake"
         "${DEBUG_SHARE}/*[Cc]onfig-version.cmake"
@@ -126,7 +127,7 @@ function(vcpkg_fixup_cmake_targets)
         endforeach()
     endif()
 
-    file(GLOB_RECURSE MAIN_TARGETS "${RELEASE_SHARE}/*[Tt]argets.cmake")
+    file(GLOB_RECURSE MAIN_TARGETS "${RELEASE_SHARE}/*[Tt]argets.cmake" "${RELEASE_SHARE}/*Exports.cmake")
     foreach(MAIN_TARGET IN LISTS MAIN_TARGETS)
         file(READ ${MAIN_TARGET} _contents)
         string(REGEX REPLACE
