@@ -1,0 +1,99 @@
+diff --git a/cmake/defaults/msvcdefaults.cmake b/cmake/defaults/msvcdefaults.cmake
+index 1b6fe47..1394df1 100644
+--- a/cmake/defaults/msvcdefaults.cmake
++++ b/cmake/defaults/msvcdefaults.cmake
+@@ -26,9 +26,7 @@
+ set(_PXR_CXX_FLAGS "${_PXR_CXX_FLAGS} /EHsc")
+ 
+ # Standards compliant.
+-set(_PXR_CXX_FLAGS "${_PXR_CXX_FLAGS} /Zc:rvalueCast
+-                                      /Zc:strictStrings
+-                                      /Zc:inline")
++set(_PXR_CXX_FLAGS "${_PXR_CXX_FLAGS} /Zc:rvalueCast /Zc:strictStrings /Zc:inline")
+ 
+ # Turn on all but informational warnings.
+ set(_PXR_CXX_FLAGS "${_PXR_CXX_FLAGS} /W3")
+@@ -97,11 +95,8 @@ _add_define("OPENEXR_DLL")
+ set(_PXR_CXX_FLAGS "${_PXR_CXX_FLAGS} /bigobj")
+ 
+ # Enable PDB generation.
+-set(_PXR_CXX_FLAGS "${_PXR_CXX_FLAGS} /Zi")
+ 
+ # Enable multiprocessor builds.
+-set(_PXR_CXX_FLAGS "${_PXR_CXX_FLAGS} /MP")
+-set(_PXR_CXX_FLAGS "${_PXR_CXX_FLAGS} /Gm-")
+ 
+ # Ignore LNK4221.  This happens when making an archive with a object file
+ # with no symbols in it.  We do this a lot because of a pattern of having
+diff --git a/cmake/macros/Private.cmake b/cmake/macros/Private.cmake
+index e74e1bb..9936e76 100644
+--- a/cmake/macros/Private.cmake
++++ b/cmake/macros/Private.cmake
+@@ -1035,7 +1035,8 @@ function(_pxr_python_module NAME)
+     install(
+         TARGETS ${LIBRARY_NAME}
+         LIBRARY DESTINATION ${libInstallPrefix}
+-        RUNTIME DESTINATION ${libInstallPrefix}
++        ARCHIVE DESTINATION lib
++        RUNTIME DESTINATION bin
+     )
+     
+     if(NOT "${PXR_PREFIX}" STREQUAL "")
+@@ -1313,22 +1314,16 @@ function(_pxr_library NAME)
+         endif()
+     else()
+         if(BUILD_SHARED_LIBS AND NOT PXR_BUILD_MONOLITHIC)
++            if(NOT "${NAME}" STREQUAL "usdObj")
+             install(
+                 TARGETS ${NAME}
+                 EXPORT pxrTargets
+                 LIBRARY DESTINATION ${libInstallPrefix}
+                 ARCHIVE DESTINATION ${libInstallPrefix}
+-                RUNTIME DESTINATION ${libInstallPrefix}
++                RUNTIME DESTINATION bin
+                 PUBLIC_HEADER DESTINATION ${headerInstallPrefix}
+             )
+-
+-            if(CMAKE_HOST_WIN32)
+-                _get_install_dir("bin" binInstallPrefix)
+-                install(
+-                    FILES $<TARGET_PDB_FILE:${NAME}>
+-                    DESTINATION ${binInstallPrefix}
+-                    OPTIONAL)
+-            endif(CMAKE_HOST_WIN32)
++            endif()
+ 
+             export(TARGETS ${NAME}
+                 APPEND
+@@ -1339,7 +1334,7 @@ function(_pxr_library NAME)
+                 TARGETS ${NAME}
+                 LIBRARY DESTINATION ${libInstallPrefix}
+                 ARCHIVE DESTINATION ${libInstallPrefix}
+-                RUNTIME DESTINATION ${libInstallPrefix}
++                RUNTIME DESTINATION bin
+                 PUBLIC_HEADER DESTINATION ${headerInstallPrefix}
+             )
+         endif()
+diff --git a/cmake/macros/Public.cmake b/cmake/macros/Public.cmake
+index 3b8f84d..1c7639c 100644
+--- a/cmake/macros/Public.cmake
++++ b/cmake/macros/Public.cmake
+@@ -161,7 +161,8 @@ function(pxr_cpp_bin BIN_NAME)
+ 
+     install(
+         TARGETS ${BIN_NAME}
+-        DESTINATION ${installDir}
++        DESTINATION tools/pxr
++        CONFIGURATIONS Release
+     )
+ endfunction()
+ 
+@@ -846,7 +847,7 @@ function(pxr_toplevel_prologue)
+                 TARGETS usd_ms
+                 LIBRARY DESTINATION ${libInstallPrefix}
+                 ARCHIVE DESTINATION ${libInstallPrefix}
+-                RUNTIME DESTINATION ${libInstallPrefix}
++                RUNTIME DESTINATION bin
+             )
+         endif()
+     endif()
