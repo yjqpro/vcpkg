@@ -7,10 +7,10 @@ vcpkg_from_github(
     SHA512 09fa3c87f8d516eabe3241247a5094c32ee0481961cf85bf78ecb13acdf23bb2ec82f113d2660271d22742c79e76d73fb122730fa28e34c7f5477c05a4a6534c
     HEAD_REF master
     PATCHES
-        ${CMAKE_CURRENT_LIST_DIR}/0001_cmake.patch
-        ${CMAKE_CURRENT_LIST_DIR}/0002_fix_uwp.patch
-        ${CMAKE_CURRENT_LIST_DIR}/0003_fix_libraries.patch
-        ${CMAKE_CURRENT_LIST_DIR}/0004_nghttp2_staticlib.patch
+        0001_cmake.patch
+        0002_fix_uwp.patch
+        0003_fix_libraries.patch
+        0004_nghttp2_staticlib.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" CURL_STATICLIB)
@@ -132,5 +132,9 @@ file(WRITE ${CURRENT_PACKAGES_DIR}/include/curl/curl.h "${CURL_H}")
 vcpkg_copy_pdbs()
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/usage DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
+
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    configure_file(${CMAKE_CURRENT_LIST_DIR}/vcpkg-cmake-wrapper.cmake ${CURRENT_PACKAGES_DIR}/share/${PORT}/vcpkg-cmake-wrapper.cmake @ONLY)
+endif()
 
 vcpkg_test_cmake(PACKAGE_NAME CURL MODULE)
