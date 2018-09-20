@@ -54,3 +54,5 @@ file(
         ${CURRENT_PACKAGES_DIR}/share/usd/LICENSE.txt
         ${CURRENT_PACKAGES_DIR}/share/usd/copyright
 )
+
+vcpkg_test_cmake(PACKAGE_NAME pxr)
