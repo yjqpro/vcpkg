@@ -9,6 +9,7 @@ vcpkg_from_github(
 )
 
 # directory path length needs to be shorter than 50 characters
+file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/ITK)
 file(RENAME ${SOURCE_PATH} ${CURRENT_BUILDTREES_DIR}/ITK)
 set(SOURCE_PATH "${CURRENT_BUILDTREES_DIR}/ITK")
 
