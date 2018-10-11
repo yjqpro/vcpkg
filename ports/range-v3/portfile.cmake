@@ -14,6 +14,7 @@ vcpkg_configure_cmake(
         -DRANGE_V3_EXAMPLES=ON
         -DRANGE_V3_PERF=ON
         -DRANGE_V3_HEADER_CHECKS=ON
+        -DRANGES_CXX_STD=17
 )
 
 vcpkg_install_cmake()
