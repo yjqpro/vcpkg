@@ -34,14 +34,27 @@ function(vcpkg_test_cmake)
     # Generate test source CMakeLists.txt
     set(VCPKG_TEST_CMAKELIST ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-test/CMakeLists.txt)
     file(WRITE  ${VCPKG_TEST_CMAKELIST} "cmake_minimum_required(VERSION 3.10)\n")
-    file(APPEND ${VCPKG_TEST_CMAKELIST} "set(CMAKE_PREFIX_PATH \"${CURRENT_PACKAGES_DIR};${CURRENT_INSTALLED_DIR}\")\n")
+    file(APPEND ${VCPKG_TEST_CMAKELIST} "project(test C CXX)\n")
+    file(APPEND ${VCPKG_TEST_CMAKELIST} "list(APPEND CMAKE_PREFIX_PATH \"${CURRENT_PACKAGES_DIR}\")\n")
     file(APPEND ${VCPKG_TEST_CMAKELIST} "\n")
     file(APPEND ${VCPKG_TEST_CMAKELIST} "find_package(${_tc_PACKAGE_NAME} ${PACKAGE_TYPE} REQUIRED)\n")
+
+    if(CMAKE_HOST_WIN32)
+      set(GENERATOR -G "NMake Makefiles")
+    else()
+      set(GENERATOR)
+    endif()
+
+    if(VCPKG_CHAINLOAD_TOOLCHAIN_FILE)
+      set(TOOLCHAIN "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${VCPKG_CHAINLOAD_TOOLCHAIN_FILE}")
+    else()
+      set(TOOLCHAIN "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake")
+    endif()
 
     # Run cmake config with a generated CMakeLists.txt
     set(LOGPREFIX "${CURRENT_BUILDTREES_DIR}/test-cmake-${TARGET_TRIPLET}")
     execute_process(
-      COMMAND ${CMAKE_COMMAND} .
+      COMMAND ${CMAKE_COMMAND} . ${GENERATOR} ${TOOLCHAIN} "-DVCPKG_TARGET_TRIPLET=${TARGET_TRIPLET}" -DVCPKG_APPLOCAL_DEPS=OFF
       OUTPUT_FILE "${LOGPREFIX}-out.log"
       ERROR_FILE "${LOGPREFIX}-err.log"
       RESULT_VARIABLE error_code

@@ -2,6 +2,7 @@
 
 # Portfile helper functions
 - [vcpkg\_acquire\_msys](vcpkg_acquire_msys.md)
+- [vcpkg\_add\_to\_path](vcpkg_add_to_path.md)
 - [vcpkg\_apply\_patches](vcpkg_apply_patches.md)
 - [vcpkg\_build\_cmake](vcpkg_build_cmake.md)
 - [vcpkg\_build\_msbuild](vcpkg_build_msbuild.md)
@@ -18,3 +19,4 @@
 - [vcpkg\_from\_gitlab](vcpkg_from_gitlab.md)
 - [vcpkg\_install\_cmake](vcpkg_install_cmake.md)
 - [vcpkg\_install\_msbuild](vcpkg_install_msbuild.md)
+- [vcpkg\_test\_cmake](vcpkg_test_cmake.md)
