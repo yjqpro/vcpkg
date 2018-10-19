@@ -11,6 +11,7 @@ vcpkg_from_github(
         find-package-freetype-2.patch
         glib-cmake.patch
         0001-fix-cmake-export.patch
+        minimum-cmake.patch
 )
 
 SET(HB_HAVE_ICU "OFF")
@@ -62,5 +63,3 @@ vcpkg_copy_pdbs()
 # Handle copyright
 file(COPY ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/harfbuzz)
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/harfbuzz/COPYING ${CURRENT_PACKAGES_DIR}/share/harfbuzz/copyright)
-
-vcpkg_test_cmake(PACKAGE_NAME harfbuzz)
