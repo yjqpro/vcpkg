@@ -6,18 +6,11 @@ vcpkg_from_github(
     REF d92873e33e8a54e933e445b92151191f02feab42
     SHA512 0e3ebd27571543e1c497377dd9576a9bb0711129be12131109fe9b3c8413655ad14ce4d9ac6e281bac83c57e6032b614bc9ff53ed357d831544ca52f41513b62
     HEAD_REF master
+    PATCHES hdf5_config_mode_find_package.patch
 )
 
 # directory path length needs to be shorter than 50 characters
 file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/ITK)
-file(RENAME ${SOURCE_PATH} ${CURRENT_BUILDTREES_DIR}/ITK)
-set(SOURCE_PATH "${CURRENT_BUILDTREES_DIR}/ITK")
-
-vcpkg_apply_patches(
-    SOURCE_PATH ${SOURCE_PATH}
-    PATCHES
-      "${CMAKE_CURRENT_LIST_DIR}/hdf5_config_mode_find_package.patch"
-)
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
