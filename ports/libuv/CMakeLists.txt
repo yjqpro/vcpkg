@@ -41,14 +41,18 @@ file(GLOB UV_SOURCES_WIN src/win/*.c)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
     add_library(libuv ${UV_SOURCES_COMMON} ${UV_SOURCES_WIN})
     target_compile_definitions(libuv PRIVATE WIN32_LEAN_AND_MEAN "_WIN32_WINNT=0x0600")
-    target_link_libraries(libuv iphlpapi psapi shell32 userenv ws2_32)
+    target_link_libraries(libuv PRIVATE iphlpapi psapi shell32 userenv ws2_32)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_library(libuv ${UV_SOURCES_COMMON} ${UV_SOURCES_UNIX} ${UV_SOURCES_DARWIN})
 else() # Assume some Linux variant
     add_library(libuv ${UV_SOURCES_COMMON} ${UV_SOURCES_UNIX} ${UV_SOURCES_LINUX})
 endif()
 
-target_include_directories(libuv PUBLIC ./include PRIVATE ./src)
+target_include_directories(
+    libuv
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>
+    PRIVATE src
+)
 set_target_properties(libuv PROPERTIES DEFINE_SYMBOL BUILDING_UV_SHARED)
 
 if(NOT UV_SKIP_HEADERS)
@@ -59,7 +63,14 @@ if(NOT UV_SKIP_HEADERS)
 endif()
 
 install(TARGETS libuv
+    EXPORT libuv
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
+)
+
+install(EXPORT libuv
+    NAMESPACE unofficial::libuv::
+    FILE unofficial-libuv-config.cmake
+    DESTINATION share/unofficial-libuv
 )

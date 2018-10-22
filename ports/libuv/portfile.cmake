@@ -18,6 +18,9 @@ vcpkg_configure_cmake(
 )
 
 vcpkg_install_cmake()
+
+vcpkg_fixup_cmake_targets(CONFIG_PATH share/unofficial-libuv TARGET_PATH share/unofficial-libuv)
+
 vcpkg_copy_pdbs()
 
 file(READ ${CURRENT_PACKAGES_DIR}/include/uv.h UV_H)
