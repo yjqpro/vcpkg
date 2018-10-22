@@ -3,23 +3,13 @@ if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL WindowsStore)
     message(FATAL_ERROR "Error: UWP builds are currently not supported.")
 endif()
 
-# Glib relies on DllMain on Windows
-if(NOT VCPKG_CMAKE_SYSTEM_NAME)
-    if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
-        message("Glib relies on DllMain and therefore cannot be built statically")
-        set(VCPKG_LIBRARY_LINKAGE "dynamic")
-    endif()
-    if(VCPKG_CRT_LINKAGE STREQUAL "static")
-        message(FATAL_ERROR "Glib only supports dynamic library and crt linkage")
-    endif()
-endif()
-
 include(vcpkg_common_functions)
 set(GLIB_VERSION 2.52.3)
 vcpkg_download_distfile(ARCHIVE
     URLS "https://ftp.gnome.org/pub/gnome/sources/glib/2.52/glib-${GLIB_VERSION}.tar.xz"
     FILENAME "glib-${GLIB_VERSION}.tar.xz"
-    SHA512 a068f2519cfb82de8d4b7f004e7c1f15e841cad4046430a83b02b359d011e0c4077cdff447a1687ed7c68f1a11b4cf66b9ed9fc23ab5f0c7c6be84eb0ddc3017)
+    SHA512 a068f2519cfb82de8d4b7f004e7c1f15e841cad4046430a83b02b359d011e0c4077cdff447a1687ed7c68f1a11b4cf66b9ed9fc23ab5f0c7c6be84eb0ddc3017
+)
 
 vcpkg_extract_source_archive_ex(
     OUT_SOURCE_PATH SOURCE_PATH
@@ -27,6 +17,7 @@ vcpkg_extract_source_archive_ex(
     REF ${GLIB_VERSION}
     PATCHES
         use-libiconv-on-windows.patch
+        fix-static-msvc.patch
 )
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt DESTINATION ${SOURCE_PATH})

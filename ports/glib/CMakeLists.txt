@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.11)
 project(glib C)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -9,10 +9,14 @@ set(GLIB_LIB_SUFFIX 2.0)
 
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
     add_definitions(-DG_ENABLE_DEBUG)
+else()
+    add_definitions(-DG_DISABLE_CAST_CHECKS)
 endif()
 
 if(BUILD_SHARED_LIBS)
     add_definitions(-DDLL_EXPORT)
+else()
+    add_definitions(-DGLIB_STATIC_COMPILATION -DGOBJECT_STATIC_COMPILATION)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)

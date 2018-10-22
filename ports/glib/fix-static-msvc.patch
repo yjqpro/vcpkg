@@ -1,0 +1,69 @@
+diff --git a/glib/glib-init.c b/glib/glib-init.c
+index 30a9654..00b0129 100644
+--- a/glib/glib-init.c
++++ b/glib/glib-init.c
+@@ -275,11 +275,14 @@ glib_init (void)
+ 
+ #if defined (G_OS_WIN32)
+ 
++HMODULE glib_dll = NULL;
++
++#if defined (DLL_EXPORT)
++
+ BOOL WINAPI DllMain (HINSTANCE hinstDLL,
+                      DWORD     fdwReason,
+                      LPVOID    lpvReserved);
+ 
+-HMODULE glib_dll;
+ 
+ BOOL WINAPI
+ DllMain (HINSTANCE hinstDLL,
+@@ -290,11 +293,6 @@ DllMain (HINSTANCE hinstDLL,
+     {
+     case DLL_PROCESS_ATTACH:
+       glib_dll = hinstDLL;
+-      g_clock_win32_init ();
+-#ifdef THREADS_WIN32
+-      g_thread_win32_init ();
+-#endif
+-      glib_init ();
+       break;
+ 
+     case DLL_THREAD_DETACH:
+@@ -318,7 +316,9 @@ DllMain (HINSTANCE hinstDLL,
+   return TRUE;
+ }
+ 
+-#elif defined (G_HAS_CONSTRUCTORS)
++#endif
++#endif
++#if defined (G_HAS_CONSTRUCTORS)
+ 
+ #ifdef G_DEFINE_CONSTRUCTOR_NEEDS_PRAGMA
+ #pragma G_DEFINE_CONSTRUCTOR_PRAGMA_ARGS(glib_init_ctor)
+@@ -328,6 +328,12 @@ G_DEFINE_CONSTRUCTOR(glib_init_ctor)
+ static void
+ glib_init_ctor (void)
+ {
++#if defined (G_OS_WIN32)
++  g_clock_win32_init ();
++#ifdef THREADS_WIN32
++  g_thread_win32_init ();
++#endif
++#endif
+   glib_init ();
+ }
+ 
+diff --git a/gobject/gtype.c b/gobject/gtype.c
+index f381a78..95b6dbd 100644
+--- a/gobject/gtype.c
++++ b/gobject/gtype.c
+@@ -4451,7 +4451,7 @@ gobject_init (void)
+   _g_signal_init ();
+ }
+ 
+-#if defined (G_OS_WIN32)
++#if defined (G_OS_WIN32) && defined (DLL_EXPORT)
+ 
+ BOOL WINAPI DllMain (HINSTANCE hinstDLL,
+                      DWORD     fdwReason,
