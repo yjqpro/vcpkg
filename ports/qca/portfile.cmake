@@ -15,40 +15,18 @@ include(vcpkg_common_functions)
 find_program(GIT git)
 vcpkg_find_acquire_program(PERL)
 get_filename_component(PERL_EXE_PATH ${PERL} DIRECTORY)
-set(ENV{PATH} "$ENV{PATH};${PERL_EXE_PATH}")
+vcpkg_add_to_path(${PERL_EXE_PATH})
 
-# Set git variables to qca version 2.2.0 commit 
-set(GIT_URL "git://anongit.kde.org/qca.git")
-set(GIT_REF "19ec49f89a0a560590ec733c549b92e199792837") # Commit
-
-# Prepare source dir
-if(NOT EXISTS "${DOWNLOADS}/qca.git")
-    message(STATUS "Cloning")
-    vcpkg_execute_required_process(
-        COMMAND ${GIT} clone --bare ${GIT_URL} ${DOWNLOADS}/qca.git
-        WORKING_DIRECTORY ${DOWNLOADS}
-        LOGNAME clone
-    )
+if(EXISTS ${CURRENT_BUILDTREES_DIR}/src/.git)
+    file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/src)
 endif()
-message(STATUS "Cloning done")
 
-if(NOT EXISTS "${CURRENT_BUILDTREES_DIR}/src/.git")
-    message(STATUS "Adding worktree")
-    file(MAKE_DIRECTORY ${CURRENT_BUILDTREES_DIR})
-    vcpkg_execute_required_process(
-        COMMAND ${GIT} worktree add -f --detach ${CURRENT_BUILDTREES_DIR}/src ${GIT_REF}
-        WORKING_DIRECTORY ${DOWNLOADS}/qca.git
-        LOGNAME worktree
-    )
-endif()
-message(STATUS "Adding worktree done")
-
-set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/)
-
-# Apply the patch to install to the expected folders
-vcpkg_apply_patches(
-    SOURCE_PATH ${SOURCE_PATH}
-    PATCHES ${CMAKE_CURRENT_LIST_DIR}/0001-fix-path-for-vcpkg.patch
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO KDE/qca
+    REF 19ec49f89a0a560590ec733c549b92e199792837
+    SHA512 6a83ee6715a9a922f4fde5af571e2aad043ac5cbd522f57365038dd31879b44eb57a099ff797793d7ee19e320e0a151e5beacdff3bed525d39ea0b8e46efca9a
+    PATCHES 0001-fix-path-for-vcpkg.patch
 )
 
 # According to:
@@ -74,7 +52,6 @@ vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     CURRENT_PACKAGES_DIR ${CURRENT_PACKAGES_DIR}
     OPTIONS
-        -DBUILD_SHARED_LIBS=ON
         -DUSE_RELATIVE_PATHS=ON
         -DQT4_BUILD=OFF
         -DBUILD_TESTS=OFF
@@ -89,8 +66,6 @@ vcpkg_configure_cmake(
 
 vcpkg_install_cmake()
 
-# Patch and copy cmake files
-message(STATUS "Patching files")
 file(READ 
     ${CURRENT_PACKAGES_DIR}/debug/share/qca/cmake/QcaTargets-debug.cmake
     QCA_DEBUG_CONFIG
@@ -116,7 +91,6 @@ file(REMOVE_RECURSE
     ${CURRENT_PACKAGES_DIR}/debug/include
     ${CURRENT_PACKAGES_DIR}/debug/share
 )
-message(STATUS "Patching files done")
 
 # Handle copyright
 file(COPY ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/qca)
