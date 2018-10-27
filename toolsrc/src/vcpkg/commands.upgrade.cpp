@@ -62,7 +62,7 @@ namespace vcpkg::Commands::Upgrade
 
             if (outdated_packages.empty())
             {
-                System::println("All installed packages are up-to-date with the local portfiles.");
+                System::printfln("All installed packages are up-to-date with the local portfiles.");
                 Checks::exit_success(VCPKG_LINE_INFO);
             }
 
@@ -112,22 +112,22 @@ namespace vcpkg::Commands::Upgrade
 
             if (!up_to_date.empty())
             {
-                System::println(System::Color::success, "The following packages are up-to-date:");
-                System::println(Strings::join(
+                System::printfln(System::Color::success, "The following packages are up-to-date:");
+                System::printfln(Strings::join(
                     "", up_to_date, [](const PackageSpec& spec) { return "    " + spec.to_string() + "\n"; }));
             }
 
             if (!not_installed.empty())
             {
-                System::println(System::Color::error, "The following packages are not installed:");
-                System::println(Strings::join(
+                System::printfln(System::Color::error, "The following packages are not installed:");
+                System::printfln(Strings::join(
                     "", not_installed, [](const PackageSpec& spec) { return "    " + spec.to_string() + "\n"; }));
             }
 
             if (!no_portfile.empty())
             {
-                System::println(System::Color::error, "The following packages do not have a valid portfile:");
-                System::println(Strings::join(
+                System::printfln(System::Color::error, "The following packages do not have a valid portfile:");
+                System::printfln(Strings::join(
                     "", no_portfile, [](const PackageSpec& spec) { return "    " + spec.to_string() + "\n"; }));
             }
 
@@ -166,7 +166,7 @@ namespace vcpkg::Commands::Upgrade
 
         if (!no_dry_run)
         {
-            System::println(System::Color::warning,
+            System::printfln(System::Color::warning,
                             "If you are sure you want to rebuild the above packages, run this command with the "
                             "--no-dry-run option.");
             Checks::exit_fail(VCPKG_LINE_INFO);
@@ -174,7 +174,7 @@ namespace vcpkg::Commands::Upgrade
 
         const Install::InstallSummary summary = Install::perform(plan, keep_going, paths, status_db);
 
-        System::println("\nTotal elapsed time: %s\n", summary.total_elapsed_time);
+        System::printfln("\nTotal elapsed time: %s\n", summary.total_elapsed_time);
 
         if (keep_going == KeepGoing::YES)
         {

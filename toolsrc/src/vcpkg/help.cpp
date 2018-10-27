@@ -34,7 +34,7 @@ namespace vcpkg::Help
 
     static void integrate_topic_fn(const VcpkgPaths&)
     {
-        System::print("Commands:\n"
+        System::printf("Commands:\n"
                       "%s",
                       Commands::Integrate::INTEGRATE_COMMAND_HELPSTRING);
     }
@@ -66,7 +66,7 @@ namespace vcpkg::Help
 
     static void help_topics(const VcpkgPaths&)
     {
-        System::println("Available help topics:\n"
+        System::printfln("Available help topics:\n"
                         "  triplet\n"
                         "  integrate"
                         "%s",
@@ -75,16 +75,16 @@ namespace vcpkg::Help
 
     void help_topic_valid_triplet(const VcpkgPaths& paths)
     {
-        System::println("Available architecture triplets:");
+        System::printfln("Available architecture triplets:");
         for (auto&& triplet : paths.get_available_triplets())
         {
-            System::println("  %s", triplet);
+            System::printfln("  %s", triplet);
         }
     }
 
     void print_usage()
     {
-        System::println(
+        System::printfln(
             "Commands:\n"
             "  vcpkg search [pat]              Search for packages available to be built\n"
             "  vcpkg install <pkg>...          Install a package\n"
@@ -153,7 +153,7 @@ namespace vcpkg::Help
             Checks::exit_success(VCPKG_LINE_INFO);
         }
 
-        System::println(System::Color::error, "Error: unknown topic %s", topic);
+        System::printfln(System::Color::error, "Error: unknown topic %s", topic);
         help_topics(paths);
         Checks::exit_fail(VCPKG_LINE_INFO);
     }

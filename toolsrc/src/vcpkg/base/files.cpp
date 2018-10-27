@@ -185,7 +185,7 @@ namespace vcpkg::Files
 
             if (this->exists(path))
             {
-                System::println(System::Color::warning,
+                System::printfln(System::Color::warning,
                                 "Some files in %s were unable to be removed. Close any editors operating in this "
                                 "directory and retry.",
                                 path.string());
@@ -274,7 +274,7 @@ namespace vcpkg::Files
                     if (Util::find(ret, p) == ret.end() && this->exists(p))
                     {
                         ret.push_back(p);
-                        Debug::println("Found path: %s", p.u8string());
+                        Debug::printfln("Found path: %s", p.u8string());
                     }
                 }
             }
@@ -306,11 +306,11 @@ namespace vcpkg::Files
 
     void print_paths(const std::vector<fs::path>& paths)
     {
-        System::println();
+        System::printfln();
         for (const fs::path& p : paths)
         {
-            System::println("    %s", p.generic_string());
+            System::printfln("    %s", p.generic_string());
         }
-        System::println();
+        System::printfln();
     }
 }

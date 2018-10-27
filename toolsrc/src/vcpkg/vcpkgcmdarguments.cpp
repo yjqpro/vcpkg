@@ -16,7 +16,7 @@ namespace vcpkg
     {
         if (arg_begin == arg_end)
         {
-            System::println(System::Color::error, "Error: expected value after %s", option_name);
+            System::printfln(System::Color::error, "Error: expected value after %s", option_name);
             Metrics::g_metrics.lock()->track_property("error", "error option name");
             Help::print_usage();
             Checks::exit_fail(VCPKG_LINE_INFO);
@@ -24,7 +24,7 @@ namespace vcpkg
 
         if (option_field != nullptr)
         {
-            System::println(System::Color::error, "Error: %s specified multiple times", option_name);
+            System::printfln(System::Color::error, "Error: %s specified multiple times", option_name);
             Metrics::g_metrics.lock()->track_property("error", "error option specified multiple times");
             Help::print_usage();
             Checks::exit_fail(VCPKG_LINE_INFO);
@@ -37,7 +37,7 @@ namespace vcpkg
     {
         if (option_field && option_field != new_setting)
         {
-            System::println(System::Color::error, "Error: conflicting values specified for --%s", option_name);
+            System::printfln(System::Color::error, "Error: conflicting values specified for --%s", option_name);
             Metrics::g_metrics.lock()->track_property("error", "error conflicting switches");
             Help::print_usage();
             Checks::exit_fail(VCPKG_LINE_INFO);
@@ -65,7 +65,7 @@ namespace vcpkg
                 auto lines = fs.read_lines(fs::u8path(arg));
                 if (!lines.has_value())
                 {
-                    System::println(System::Color::error, "Error: Could not open response file %s", arg);
+                    System::printfln(System::Color::error, "Error: Could not open response file %s", arg);
                     Checks::exit_fail(VCPKG_LINE_INFO);
                 }
                 std::copy(lines.get()->begin(), lines.get()->end(), std::back_inserter(v));
@@ -199,7 +199,7 @@ namespace vcpkg
         {
             if (actual_arg_count != command_structure.minimum_arity)
             {
-                System::println(System::Color::error,
+                System::printfln(System::Color::error,
                                 "Error: '%s' requires %u arguments, but %u were provided.",
                                 this->command,
                                 command_structure.minimum_arity,
@@ -211,7 +211,7 @@ namespace vcpkg
         {
             if (actual_arg_count < command_structure.minimum_arity)
             {
-                System::println(System::Color::error,
+                System::printfln(System::Color::error,
                                 "Error: '%s' requires at least %u arguments, but %u were provided",
                                 this->command,
                                 command_structure.minimum_arity,
@@ -220,7 +220,7 @@ namespace vcpkg
             }
             if (actual_arg_count > command_structure.maximum_arity)
             {
-                System::println(System::Color::error,
+                System::printfln(System::Color::error,
                                 "Error: '%s' requires at most %u arguments, but %u were provided",
                                 this->command,
                                 command_structure.maximum_arity,
@@ -238,7 +238,7 @@ namespace vcpkg
                 if (it->second.has_value())
                 {
                     // Having a string value indicates it was passed like '--a=xyz'
-                    System::println(
+                    System::printfln(
                         System::Color::error, "Error: The option '%s' does not accept an argument.", option.name);
                     failed = true;
                 }
@@ -258,7 +258,7 @@ namespace vcpkg
                 if (!it->second.has_value())
                 {
                     // Not having a string value indicates it was passed like '--a'
-                    System::println(
+                    System::printfln(
                         System::Color::error, "Error: The option '%s' must be passed an argument.", option.name);
                     failed = true;
                 }
@@ -272,12 +272,12 @@ namespace vcpkg
 
         if (!options_copy.empty())
         {
-            System::println(System::Color::error, "Unknown option(s) for command '%s':", this->command);
+            System::printfln(System::Color::error, "Unknown option(s) for command '%s':", this->command);
             for (auto&& option : options_copy)
             {
-                System::println("    %s", option.first);
+                System::printfln("    %s", option.first);
             }
-            System::println();
+            System::printfln();
             failed = true;
         }
 
@@ -294,20 +294,20 @@ namespace vcpkg
     {
         if (!command_structure.example_text.empty())
         {
-            System::println("%s", command_structure.example_text);
+            System::printfln("%s", command_structure.example_text);
         }
 
-        System::println("Options:");
+        System::printfln("Options:");
         for (auto&& option : command_structure.options.switches)
         {
-            System::println("    %-40s %s", option.name, option.short_help_text);
+            System::printfln("    %-40s %s", option.name, option.short_help_text);
         }
         for (auto&& option : command_structure.options.settings)
         {
-            System::println("    %-40s %s", (option.name + "=..."), option.short_help_text);
+            System::printfln("    %-40s %s", (option.name + "=..."), option.short_help_text);
         }
-        System::println("    %-40s %s", "--triplet <t>", "Set the default triplet for unqualified packages");
-        System::println("    %-40s %s",
+        System::printfln("    %-40s %s", "--triplet <t>", "Set the default triplet for unqualified packages");
+        System::printfln("    %-40s %s",
                         "--vcpkg-root <path>",
                         "Specify the vcpkg directory to use instead of current directory or tool directory");
     }

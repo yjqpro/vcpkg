@@ -33,9 +33,9 @@ namespace vcpkg::Checks
 
         auto elapsed_us = GlobalState::timer.lock()->microseconds();
         if (debugging)
-            System::println("[DEBUG] Exiting after %d us (%d us)",
-                            static_cast<int>(elapsed_us),
-                            static_cast<int>(elapsed_us_inner));
+            System::printfln("[DEBUG] Exiting after %d us (%d us)",
+                             static_cast<int>(elapsed_us),
+                             static_cast<int>(elapsed_us_inner));
 
         fflush(nullptr);
 
@@ -65,8 +65,8 @@ namespace vcpkg::Checks
 #endif
     void unreachable(const LineInfo& line_info)
     {
-        System::println(System::Color::error, "Error: Unreachable code was reached");
-        System::println(System::Color::error, line_info.to_string()); // Always print line_info here
+        System::printfln(System::Color::error, "Error: Unreachable code was reached");
+        System::printfln(System::Color::error, line_info.to_string()); // Always print line_info here
 #ifndef NDEBUG
         std::abort();
 #else
@@ -76,13 +76,13 @@ namespace vcpkg::Checks
 
     void exit_with_code(const LineInfo& line_info, const int exit_code)
     {
-        Debug::println(System::Color::error, line_info.to_string());
+        Debug::printfln(System::Color::error, line_info.to_string());
         cleanup_and_exit(exit_code);
     }
 
     void exit_with_message(const LineInfo& line_info, const CStringView error_message)
     {
-        System::println(System::Color::error, error_message);
+        System::printfln(System::Color::error, error_message);
         exit_fail(line_info);
     }
 

@@ -53,7 +53,7 @@ namespace vcpkg::Update
     void perform_and_exit(const VcpkgCmdArguments& args, const VcpkgPaths& paths)
     {
         args.parse_arguments(COMMAND_STRUCTURE);
-        System::println("Using local portfile versions. To update the local portfiles, use `git pull`.");
+        System::printfln("Using local portfile versions. To update the local portfiles, use `git pull`.");
 
         const StatusParagraphs status_db = database_load_check(paths);
 
@@ -64,16 +64,16 @@ namespace vcpkg::Update
 
         if (outdated_packages.empty())
         {
-            System::println("No packages need updating.");
+            System::printfln("No packages need updating.");
         }
         else
         {
-            System::println("The following packages differ from their port versions:");
+            System::printfln("The following packages differ from their port versions:");
             for (auto&& package : outdated_packages)
             {
-                System::println("    %-32s %s", package.spec, package.version_diff.to_string());
+                System::printfln("    %-32s %s", package.spec, package.version_diff.to_string());
             }
-            System::println("\n"
+            System::printfln("\n"
                             "To update these packages and all dependencies, run\n"
                             "    .\\vcpkg upgrade\n"
                             "\n"

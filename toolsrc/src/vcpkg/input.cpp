@@ -20,8 +20,8 @@ namespace vcpkg::Input
         }
 
         // Intentionally show the lowercased string
-        System::println(System::Color::error, "Error: %s: %s", vcpkg::to_string(expected_spec.error()), as_lowercase);
-        System::print(example_text);
+        System::printfln(System::Color::error, "Error: %s: %s", vcpkg::to_string(expected_spec.error()), as_lowercase);
+        System::printf(example_text);
         Checks::exit_fail(VCPKG_LINE_INFO);
     }
 
@@ -29,7 +29,7 @@ namespace vcpkg::Input
     {
         if (!paths.is_valid_triplet(t))
         {
-            System::println(System::Color::error, "Error: invalid triplet: %s", t);
+            System::printfln(System::Color::error, "Error: invalid triplet: %s", t);
             Metrics::g_metrics.lock()->track_property("error", "invalid triplet: " + t.to_string());
             Help::help_topic_valid_triplet(paths);
             Checks::exit_fail(VCPKG_LINE_INFO);
@@ -48,8 +48,8 @@ namespace vcpkg::Input
         }
 
         // Intentionally show the lowercased string
-        System::println(System::Color::error, "Error: %s: %s", vcpkg::to_string(expected_spec.error()), as_lowercase);
-        System::print(example_text);
+        System::printfln(System::Color::error, "Error: %s: %s", vcpkg::to_string(expected_spec.error()), as_lowercase);
+        System::printf(example_text);
         Checks::exit_fail(VCPKG_LINE_INFO);
     }
 }

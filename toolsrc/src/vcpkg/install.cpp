@@ -65,7 +65,7 @@ namespace vcpkg::Install
             const auto status = fs.symlink_status(file, ec);
             if (ec)
             {
-                System::println(System::Color::error, "failed: %s: %s", file.u8string(), ec.message());
+                System::printfln(System::Color::error, "failed: %s: %s", file.u8string(), ec.message());
                 continue;
             }
 
@@ -87,7 +87,7 @@ namespace vcpkg::Install
                     fs.create_directory(target, ec);
                     if (ec)
                     {
-                        System::println(System::Color::error, "failed: %s: %s", target.u8string(), ec.message());
+                        System::printfln(System::Color::error, "failed: %s: %s", target.u8string(), ec.message());
                     }
 
                     // Trailing backslash for directories
@@ -98,7 +98,7 @@ namespace vcpkg::Install
                 {
                     if (fs.exists(target))
                     {
-                        System::println(System::Color::warning,
+                        System::printfln(System::Color::warning,
                                         "File %s was already present and will be overwritten",
                                         target.u8string(),
                                         ec.message());
@@ -106,7 +106,7 @@ namespace vcpkg::Install
                     fs.copy_file(file, target, fs::copy_options::overwrite_existing, ec);
                     if (ec)
                     {
-                        System::println(System::Color::error, "failed: %s: %s", target.u8string(), ec.message());
+                        System::printfln(System::Color::error, "failed: %s: %s", target.u8string(), ec.message());
                     }
                     output.push_back(Strings::format(R"(%s/%s)", destination_subdirectory, suffix));
                     break;
@@ -115,7 +115,7 @@ namespace vcpkg::Install
                 {
                     if (fs.exists(target))
                     {
-                        System::println(System::Color::warning,
+                        System::printfln(System::Color::warning,
                                         "File %s was already present and will be overwritten",
                                         target.u8string(),
                                         ec.message());
@@ -123,13 +123,13 @@ namespace vcpkg::Install
                     fs.copy_symlink(file, target, ec);
                     if (ec)
                     {
-                        System::println(System::Color::error, "failed: %s: %s", target.u8string(), ec.message());
+                        System::printfln(System::Color::error, "failed: %s: %s", target.u8string(), ec.message());
                     }
                     output.push_back(Strings::format(R"(%s/%s)", destination_subdirectory, suffix));
                     break;
                 }
                 default:
-                    System::println(System::Color::error, "failed: %s: cannot handle file type", file.u8string());
+                    System::printfln(System::Color::error, "failed: %s: cannot handle file type", file.u8string());
                     break;
             }
         }
@@ -209,13 +209,13 @@ namespace vcpkg::Install
         if (!intersection.empty())
         {
             const fs::path triplet_install_path = paths.installed / triplet.canonical_name();
-            System::println(System::Color::error,
+            System::printfln(System::Color::error,
                             "The following files are already installed in %s and are in conflict with %s",
                             triplet_install_path.generic_string(),
                             bcf.core_paragraph.spec);
-            System::print("\n    ");
-            System::println(Strings::join("\n    ", intersection));
-            System::println();
+            System::printf("\n    ");
+            System::printfln(Strings::join("\n    ", intersection));
+            System::printfln();
             return InstallResult::FILE_CONFLICTS;
         }
 
@@ -278,20 +278,20 @@ namespace vcpkg::Install
         if (plan_type == InstallPlanType::ALREADY_INSTALLED)
         {
             if (use_head_version && is_user_requested)
-                System::println(
+                System::printfln(
                     System::Color::warning, "Package %s is already installed -- not building from HEAD", display_name);
             else
-                System::println(System::Color::success, "Package %s is already installed", display_name);
+                System::printfln(System::Color::success, "Package %s is already installed", display_name);
             return BuildResult::SUCCEEDED;
         }
 
         auto aux_install = [&](const std::string& name, const BinaryControlFile& bcf) -> BuildResult {
-            System::println("Installing package %s... ", name);
+            System::printfln("Installing package %s... ", name);
             const auto install_result = install_package(paths, bcf, &status_db);
             switch (install_result)
             {
                 case InstallResult::SUCCESS:
-                    System::println(System::Color::success, "Installing package %s... done", name);
+                    System::printfln(System::Color::success, "Installing package %s... done", name);
                     return BuildResult::SUCCEEDED;
                 case InstallResult::FILE_CONFLICTS: return BuildResult::FILE_CONFLICTS;
                 default: Checks::unreachable(VCPKG_LINE_INFO);
@@ -301,9 +301,9 @@ namespace vcpkg::Install
         if (plan_type == InstallPlanType::BUILD_AND_INSTALL)
         {
             if (use_head_version)
-                System::println("Building package %s from HEAD... ", display_name_with_features);
+                System::printfln("Building package %s from HEAD... ", display_name_with_features);
             else
-                System::println("Building package %s... ", display_name_with_features);
+                System::printfln("Building package %s... ", display_name_with_features);
 
             auto result = [&]() -> Build::ExtendedBuildResult {
                 const Build::BuildPackageConfig build_config{action.source_control_file.value_or_exit(VCPKG_LINE_INFO),
@@ -316,11 +316,11 @@ namespace vcpkg::Install
 
             if (result.code != Build::BuildResult::SUCCEEDED)
             {
-                System::println(System::Color::error, Build::create_error_message(result.code, action.spec));
+                System::printfln(System::Color::error, Build::create_error_message(result.code, action.spec));
                 return result;
             }
 
-            System::println("Building package %s... done", display_name_with_features);
+            System::printfln("Building package %s... done", display_name_with_features);
 
             auto bcf = std::make_unique<BinaryControlFile>(
                 Paragraphs::try_load_cached_package(paths, action.spec).value_or_exit(VCPKG_LINE_INFO));
@@ -339,7 +339,7 @@ namespace vcpkg::Install
 
         if (plan_type == InstallPlanType::EXCLUDED)
         {
-            System::println(System::Color::warning, "Package %s is excluded", display_name);
+            System::printfln(System::Color::warning, "Package %s is excluded", display_name);
             return BuildResult::EXCLUDED;
         }
 
@@ -348,11 +348,11 @@ namespace vcpkg::Install
 
     void InstallSummary::print() const
     {
-        System::println("RESULTS");
+        System::printfln("RESULTS");
 
         for (const SpecSummary& result : this->results)
         {
-            System::println("    %s: %s: %s", result.spec, Build::to_string(result.build_result.code), result.timing);
+            System::printfln("    %s: %s: %s", result.spec, Build::to_string(result.build_result.code), result.timing);
         }
 
         std::map<BuildResult, int> summary;
@@ -366,10 +366,10 @@ namespace vcpkg::Install
             summary[r.build_result.code]++;
         }
 
-        System::println("\nSUMMARY");
+        System::printfln("\nSUMMARY");
         for (const std::pair<const BuildResult, int>& entry : summary)
         {
-            System::println("    %s: %d", Build::to_string(entry.first), entry.second);
+            System::printfln("    %s: %d", Build::to_string(entry.first), entry.second);
         }
     }
 
@@ -391,7 +391,7 @@ namespace vcpkg::Install
 
             const PackageSpec& spec = action.spec();
             const std::string display_name = spec.to_string();
-            System::println("Starting package %zd/%zd: %s", counter, package_count, display_name);
+            System::printfln("Starting package %zd/%zd: %s", counter, package_count, display_name);
 
             results.emplace_back(spec, &action);
 
@@ -401,7 +401,7 @@ namespace vcpkg::Install
 
                 if (result.code != BuildResult::SUCCEEDED && keep_going == KeepGoing::NO)
                 {
-                    System::println(Build::create_user_troubleshooting_message(install_action->spec));
+                    System::printfln(Build::create_user_troubleshooting_message(install_action->spec));
                     Checks::exit_fail(VCPKG_LINE_INFO);
                 }
 
@@ -417,7 +417,7 @@ namespace vcpkg::Install
             }
 
             results.back().timing = build_timer.elapsed();
-            System::println("Elapsed time for package %s: %s", display_name, results.back().timing.to_string());
+            System::printfln("Elapsed time for package %s: %s", display_name, results.back().timing.to_string());
         }
 
         return InstallSummary{std::move(results), timer.to_string()};
@@ -471,7 +471,7 @@ namespace vcpkg::Install
             auto maybe_contents = fs.read_contents(usage_file);
             if (auto p_contents = maybe_contents.get())
             {
-                System::println(*p_contents);
+                System::printfln(*p_contents);
             }
             return;
         }
@@ -525,15 +525,15 @@ namespace vcpkg::Install
             }
             else
             {
-                System::println("The package %s provides CMake targets:\n", bpgh.spec);
+                System::printfln("The package %s provides CMake targets:\n", bpgh.spec);
 
                 for (auto&& library_target_pair : library_targets)
                 {
                     auto config_it = config_files.find(library_target_pair.first);
                     if (config_it != config_files.end())
-                        System::println("    find_package(%s CONFIG REQUIRED)", config_it->second);
+                        System::printfln("    find_package(%s CONFIG REQUIRED)", config_it->second);
                     else
-                        System::println("    find_package(%s CONFIG REQUIRED)", library_target_pair.first);
+                        System::printfln("    find_package(%s CONFIG REQUIRED)", library_target_pair.first);
 
                     std::sort(library_target_pair.second.begin(),
                               library_target_pair.second.end(),
@@ -545,7 +545,7 @@ namespace vcpkg::Install
 
                     if (library_target_pair.second.size() <= 4)
                     {
-                        System::println("    target_link_libraries(main PRIVATE %s)\n",
+                        System::printfln("    target_link_libraries(main PRIVATE %s)\n",
                                         Strings::join(" ", library_target_pair.second));
                     }
                     else
@@ -553,7 +553,7 @@ namespace vcpkg::Install
                         auto omitted = library_target_pair.second.size() - 4;
                         library_target_pair.second.erase(library_target_pair.second.begin() + 4,
                                                          library_target_pair.second.end());
-                        System::println("    # Note: %zd target(s) were omitted.\n"
+                        System::printfln("    # Note: %zd target(s) were omitted.\n"
                                         "    target_link_libraries(main PRIVATE %s)\n",
                                         omitted,
                                         Strings::join(" ", library_target_pair.second));
@@ -667,7 +667,7 @@ namespace vcpkg::Install
 
         const InstallSummary summary = perform(action_plan, keep_going, paths, status_db);
 
-        System::println("\nTotal elapsed time: %s\n", summary.total_elapsed_time);
+        System::printfln("\nTotal elapsed time: %s\n", summary.total_elapsed_time);
 
         if (keep_going == KeepGoing::YES)
         {

@@ -17,12 +17,12 @@ namespace vcpkg::Commands::Search
     {
         if (full_desc)
         {
-            System::println(
+            System::printfln(
                 "%-20s %-16s %s", source_paragraph.name, source_paragraph.version, source_paragraph.description);
         }
         else
         {
-            System::println("%-20s %-16s %s",
+            System::printfln("%-20s %-16s %s",
                             vcpkg::shorten_text(source_paragraph.name, 20),
                             vcpkg::shorten_text(source_paragraph.version, 16),
                             vcpkg::shorten_text(source_paragraph.description, 81));
@@ -33,11 +33,11 @@ namespace vcpkg::Commands::Search
     {
         if (full_desc)
         {
-            System::println("%-37s %s", name + "[" + feature_paragraph.name + "]", feature_paragraph.description);
+            System::printfln("%-37s %s", name + "[" + feature_paragraph.name + "]", feature_paragraph.description);
         }
         else
         {
-            System::println("%-37s %s",
+            System::printfln("%-37s %s",
                             vcpkg::shorten_text(name + "[" + feature_paragraph.name + "]", 37),
                             vcpkg::shorten_text(feature_paragraph.description, 81));
         }
@@ -102,7 +102,7 @@ namespace vcpkg::Commands::Search
             }
         }
 
-        System::println(
+        System::printfln(
             "\nIf your library is not listed, please open an issue at and/or consider making a pull request:\n"
             "    https://github.com/Microsoft/vcpkg/issues");
 

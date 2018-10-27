@@ -61,7 +61,7 @@ namespace vcpkg
 
         if (const auto err = parser.error_info(this->spec.to_string()))
         {
-            System::println(
+            System::printfln(
                 System::Color::error, "Error: while parsing the Binary Paragraph for %s", this->spec.to_string());
             print_error_message(err);
             Checks::exit_fail(VCPKG_LINE_INFO);

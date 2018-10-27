@@ -18,7 +18,7 @@ namespace vcpkg::Commands::Owns
             {
                 if (file.find(file_substr) != std::string::npos)
                 {
-                    System::println("%s: %s", pgh.package.displayname(), file);
+                    System::printfln("%s: %s", pgh.package.displayname(), file);
                 }
             }
         }

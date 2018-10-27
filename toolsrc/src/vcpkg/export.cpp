@@ -97,10 +97,10 @@ namespace vcpkg::Export
             switch (plan_type)
             {
                 case ExportPlanType::ALREADY_BUILT:
-                    System::println("The following packages are already built and will be exported:\n%s", as_string);
+                    System::printfln("The following packages are already built and will be exported:\n%s", as_string);
                     continue;
                 case ExportPlanType::NOT_BUILT:
-                    System::println("The following packages need to be built:\n%s", as_string);
+                    System::printfln("The following packages need to be built:\n%s", as_string);
                     continue;
                 default: Checks::unreachable(VCPKG_LINE_INFO);
             }
@@ -330,9 +330,9 @@ namespace vcpkg::Export
 
         if (!ret.raw && !ret.nuget && !ret.ifw && !ret.zip && !ret.seven_zip && !ret.dry_run)
         {
-            System::println(System::Color::error,
+            System::printfln(System::Color::error,
                             "Must provide at least one export type: --raw --nuget --ifw --zip --7zip");
-            System::print(COMMAND_STRUCTURE.example_text);
+            System::printf(COMMAND_STRUCTURE.example_text);
             Checks::exit_fail(VCPKG_LINE_INFO);
         }
 
@@ -383,7 +383,7 @@ namespace vcpkg::Export
         const fs::path cmake_toolchain = prefix / "scripts" / "buildsystems" / "vcpkg.cmake";
         const System::CMakeVariable cmake_variable =
             System::CMakeVariable("CMAKE_TOOLCHAIN_FILE", cmake_toolchain.generic_string());
-        System::println("\n"
+        System::printfln("\n"
                         "To use the exported libraries in CMake projects use:"
                         "\n"
                         "    %s"
@@ -412,7 +412,7 @@ namespace vcpkg::Export
             }
 
             const std::string display_name = action.spec.to_string();
-            System::println("Exporting package %s... ", display_name);
+            System::printfln("Exporting package %s... ", display_name);
 
             const BinaryParagraph& binary_paragraph = action.core_paragraph().value_or_exit(VCPKG_LINE_INFO);
 
@@ -422,7 +422,7 @@ namespace vcpkg::Export
                 raw_exported_dir_path / "installed" / "vcpkg" / "info" / (binary_paragraph.fullstem() + ".list"));
 
             Install::install_files_and_write_listfile(paths.get_filesystem(), paths.package_dir(action.spec), dirs);
-            System::println(System::Color::success, "Exporting package %s... done", display_name);
+            System::printfln(System::Color::success, "Exporting package %s... done", display_name);
         }
 
         // Copy files needed for integration
@@ -430,23 +430,23 @@ namespace vcpkg::Export
 
         if (opts.raw)
         {
-            System::println(
+            System::printfln(
                 System::Color::success, R"(Files exported at: "%s")", raw_exported_dir_path.generic_string());
             print_next_step_info(raw_exported_dir_path);
         }
 
         if (opts.nuget)
         {
-            System::println("Creating nuget package... ");
+            System::printfln("Creating nuget package... ");
 
             const std::string nuget_id = opts.maybe_nuget_id.value_or(raw_exported_dir_path.filename().string());
             const std::string nuget_version = opts.maybe_nuget_version.value_or("1.0.0");
             const fs::path output_path =
                 do_nuget_export(paths, nuget_id, nuget_version, raw_exported_dir_path, export_to_path);
-            System::println(System::Color::success, "Creating nuget package... done");
-            System::println(System::Color::success, "NuGet package exported at: %s", output_path.generic_string());
+            System::printfln(System::Color::success, "Creating nuget package... done");
+            System::printfln(System::Color::success, "NuGet package exported at: %s", output_path.generic_string());
 
-            System::println(R"(
+            System::printfln(R"(
 With a project open, go to Tools->NuGet Package Manager->Package Manager Console and paste:
     Install-Package %s -Source "%s"
 )"
@@ -457,21 +457,21 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
 
         if (opts.zip)
         {
-            System::println("Creating zip archive... ");
+            System::printfln("Creating zip archive... ");
             const fs::path output_path =
                 do_archive_export(paths, raw_exported_dir_path, export_to_path, ArchiveFormatC::ZIP);
-            System::println(System::Color::success, "Creating zip archive... done");
-            System::println(System::Color::success, "Zip archive exported at: %s", output_path.generic_string());
+            System::printfln(System::Color::success, "Creating zip archive... done");
+            System::printfln(System::Color::success, "Zip archive exported at: %s", output_path.generic_string());
             print_next_step_info("[...]");
         }
 
         if (opts.seven_zip)
         {
-            System::println("Creating 7zip archive... ");
+            System::printfln("Creating 7zip archive... ");
             const fs::path output_path =
                 do_archive_export(paths, raw_exported_dir_path, export_to_path, ArchiveFormatC::SEVEN_ZIP);
-            System::println(System::Color::success, "Creating 7zip archive... done");
-            System::println(System::Color::success, "7zip archive exported at: %s", output_path.generic_string());
+            System::printfln(System::Color::success, "Creating 7zip archive... done");
+            System::printfln(System::Color::success, "7zip archive exported at: %s", output_path.generic_string());
             print_next_step_info("[...]");
         }
 
@@ -504,14 +504,14 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
 
         if (has_non_user_requested_packages)
         {
-            System::println(System::Color::warning,
+            System::printfln(System::Color::warning,
                             "Additional packages (*) need to be exported to complete this operation.");
         }
 
         const auto it = group_by_plan_type.find(ExportPlanType::NOT_BUILT);
         if (it != group_by_plan_type.cend() && !it->second.empty())
         {
-            System::println(System::Color::error, "There are packages that have not been built.");
+            System::printfln(System::Color::error, "There are packages that have not been built.");
 
             // No need to show all of them, just the user-requested ones. Dependency resolution will handle the rest.
             std::vector<const ExportPlanAction*> unbuilt = it->second;
@@ -519,7 +519,7 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
                 unbuilt, [](const ExportPlanAction* a) { return a->request_type != RequestType::USER_REQUESTED; });
 
             const auto s = Strings::join(" ", unbuilt, [](const ExportPlanAction* a) { return a->spec.to_string(); });
-            System::println("To build them, run:\n"
+            System::printfln("To build them, run:\n"
                             "    vcpkg install %s",
                             s);
             Checks::exit_fail(VCPKG_LINE_INFO);

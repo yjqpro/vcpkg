@@ -186,7 +186,7 @@ namespace vcpkg::Commands::Integrate
                 {
                     case ElevationPromptChoice::YES: break;
                     case ElevationPromptChoice::NO:
-                        System::println(System::Color::warning, "Warning: Previous integration file was not removed");
+                        System::printfln(System::Color::warning, "Warning: Previous integration file was not removed");
                         Checks::exit_fail(VCPKG_LINE_INFO);
                     default: Checks::unreachable(VCPKG_LINE_INFO);
                 }
@@ -220,7 +220,7 @@ namespace vcpkg::Commands::Integrate
             {
                 case ElevationPromptChoice::YES: break;
                 case ElevationPromptChoice::NO:
-                    System::println(System::Color::warning, "Warning: integration was not applied");
+                    System::printfln(System::Color::warning, "Warning: integration was not applied");
                     Checks::exit_fail(VCPKG_LINE_INFO);
                 default: Checks::unreachable(VCPKG_LINE_INFO);
             }
@@ -255,7 +255,7 @@ namespace vcpkg::Commands::Integrate
 
             if (!rc || ec)
             {
-                System::println(System::Color::error,
+                System::printfln(System::Color::error,
                                 "Error: Failed to copy file: %s -> %s",
                                 appdata_src_path.string(),
                                 appdata_dst_path.string());
@@ -269,14 +269,14 @@ namespace vcpkg::Commands::Integrate
         fs.write_contents(pathtxt, paths.root.generic_u8string(), ec);
         if (ec)
         {
-            System::println(System::Color::error, "Error: Failed to write file: %s", pathtxt.string());
+            System::printfln(System::Color::error, "Error: Failed to write file: %s", pathtxt.string());
             Checks::exit_fail(VCPKG_LINE_INFO);
         }
 
-        System::println(System::Color::success, "Applied user-wide integration for this vcpkg root.");
+        System::printfln(System::Color::success, "Applied user-wide integration for this vcpkg root.");
         const fs::path cmake_toolchain = paths.buildsystems / "vcpkg.cmake";
 #if defined(_WIN32)
-        System::println(
+        System::printfln(
             R"(
 All MSBuild C++ projects can now #include any installed libraries.
 Linking will be handled automatically.
@@ -285,7 +285,7 @@ Installing new libraries will make them instantly available.
 CMake projects should use: "-DCMAKE_TOOLCHAIN_FILE=%s")",
             cmake_toolchain.generic_string());
 #else
-        System::println(
+        System::printfln(
             R"(
 CMake projects should use: "-DCMAKE_TOOLCHAIN_FILE=%s")",
             cmake_toolchain.generic_string());
@@ -311,11 +311,11 @@ CMake projects should use: "-DCMAKE_TOOLCHAIN_FILE=%s")",
 
         if (was_deleted)
         {
-            System::println(System::Color::success, "User-wide integration was removed");
+            System::printfln(System::Color::success, "User-wide integration was removed");
         }
         else
         {
-            System::println(System::Color::success, "User-wide integration is not installed");
+            System::printfln(System::Color::success, "User-wide integration is not installed");
         }
 
         Checks::exit_success(VCPKG_LINE_INFO);
@@ -355,12 +355,12 @@ CMake projects should use: "-DCMAKE_TOOLCHAIN_FILE=%s")",
         const fs::path nuget_package = buildsystems_dir / Strings::format("%s.%s.nupkg", nuget_id, nupkg_version);
         Checks::check_exit(
             VCPKG_LINE_INFO, exit_code == 0 && fs.exists(nuget_package), "Error: NuGet package creation failed");
-        System::println(System::Color::success, "Created nupkg: %s", nuget_package.string());
+        System::printfln(System::Color::success, "Created nupkg: %s", nuget_package.string());
 
         auto source_path = buildsystems_dir.u8string();
         source_path = Strings::replace_all(std::move(source_path), "`", "``");
 
-        System::println(R"(
+        System::printfln(R"(
 With a project open, go to Tools->NuGet Package Manager->Package Manager Console and paste:
     Install-Package %s -Source "%s"
 )",
@@ -390,7 +390,7 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
 
         if (rc)
         {
-            System::println(System::Color::error,
+            System::printfln(System::Color::error,
                             "%s\n"
                             "Could not run:\n"
                             "    '%s'",

@@ -43,12 +43,12 @@ namespace vcpkg::Graphs
                 case ExplorationStatus::FULLY_EXPLORED: return;
                 case ExplorationStatus::PARTIALLY_EXPLORED:
                 {
-                    System::println("Cycle detected within graph:");
+                    System::printfln("Cycle detected within graph:");
                     for (auto&& node : exploration_status)
                     {
                         if (node.second == ExplorationStatus::PARTIALLY_EXPLORED)
                         {
-                            System::println("    %s", f.to_string(node.first));
+                            System::printfln("    %s", f.to_string(node.first));
                         }
                     }
                     Checks::exit_fail(VCPKG_LINE_INFO);

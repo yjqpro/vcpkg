@@ -14,11 +14,11 @@ namespace vcpkg::Commands::List
     {
         if (full_desc)
         {
-            System::println("%-50s %-16s %s", pgh.package.displayname(), pgh.package.version, pgh.package.description);
+            System::printfln("%-50s %-16s %s", pgh.package.displayname(), pgh.package.version, pgh.package.description);
         }
         else
         {
-            System::println("%-50s %-16s %s",
+            System::printfln("%-50s %-16s %s",
                             vcpkg::shorten_text(pgh.package.displayname(), 50),
                             vcpkg::shorten_text(pgh.package.version, 16),
                             vcpkg::shorten_text(pgh.package.description, 51));
@@ -48,7 +48,7 @@ namespace vcpkg::Commands::List
 
         if (installed_ipv.empty())
         {
-            System::println("No packages are installed. Did you mean `search`?");
+            System::printfln("No packages are installed. Did you mean `search`?");
             Checks::exit_success(VCPKG_LINE_INFO);
         }
 

@@ -14,7 +14,7 @@ namespace vcpkg::Commands::Autocomplete
                                                             std::vector<std::string>&& results)
     {
         const SortedVector<std::string> sorted_results(results);
-        System::println(Strings::join("\n", sorted_results));
+        System::printfln(Strings::join("\n", sorted_results));
 
         Checks::exit_success(line_info);
     }

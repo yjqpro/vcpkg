@@ -47,15 +47,15 @@ namespace vcpkg::Commands::Contact
 
 #if defined(_WIN32)
             System::cmd_execute("start https://aka.ms/NPS_vcpkg");
-            System::println("Default browser launched to https://aka.ms/NPS_vcpkg; thank you for your feedback!");
+            System::printfln("Default browser launched to https://aka.ms/NPS_vcpkg; thank you for your feedback!");
 #else
-            System::println(
+            System::printfln(
                 "Please navigate to https://aka.ms/NPS_vcpkg in your preferred browser. Thank you for your feedback!");
 #endif
         }
         else
         {
-            System::println("Send an email to %s with any feedback.", email());
+            System::printfln("Send an email to %s with any feedback.", email());
         }
         Checks::exit_success(VCPKG_LINE_INFO);
     }

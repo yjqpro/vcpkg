@@ -300,23 +300,23 @@ namespace vcpkg::VisualStudio
 
         if (!excluded_toolsets.empty())
         {
-            System::println(
+            System::printfln(
                 System::Color::warning,
                 "Warning: The following VS instances are excluded because the English language pack is unavailable.");
             for (const Toolset& toolset : excluded_toolsets)
             {
-                System::println("    %s", toolset.visual_studio_root_path.u8string());
+                System::printfln("    %s", toolset.visual_studio_root_path.u8string());
             }
-            System::println(System::Color::warning, "Please install the English language pack.");
+            System::printfln(System::Color::warning, "Please install the English language pack.");
         }
 
         if (found_toolsets.empty())
         {
-            System::println(System::Color::error, "Could not locate a complete toolset.");
-            System::println("The following paths were examined:");
+            System::printfln(System::Color::error, "Could not locate a complete toolset.");
+            System::printfln("The following paths were examined:");
             for (const fs::path& path : paths_examined)
             {
-                System::println("    %s", path.u8string());
+                System::printfln("    %s", path.u8string());
             }
             Checks::exit_fail(VCPKG_LINE_INFO);
         }

@@ -72,7 +72,7 @@ namespace vcpkg::Commands::PortsDiff
         for (const std::string& name : ports_to_print)
         {
             const VersionT& version = names_and_versions.at(name);
-            System::println("    - %-14s %-16s", name, version);
+            System::printfln("    - %-14s %-16s", name, version);
         }
     }
 
@@ -156,14 +156,14 @@ namespace vcpkg::Commands::PortsDiff
         const std::vector<std::string>& added_ports = setp.only_left;
         if (!added_ports.empty())
         {
-            System::println("\nThe following %zd ports were added:", added_ports.size());
+            System::printfln("\nThe following %zd ports were added:", added_ports.size());
             do_print_name_and_version(added_ports, current_names_and_versions);
         }
 
         const std::vector<std::string>& removed_ports = setp.only_right;
         if (!removed_ports.empty())
         {
-            System::println("\nThe following %zd ports were removed:", removed_ports.size());
+            System::printfln("\nThe following %zd ports were removed:", removed_ports.size());
             do_print_name_and_version(removed_ports, previous_names_and_versions);
         }
 
@@ -173,16 +173,16 @@ namespace vcpkg::Commands::PortsDiff
 
         if (!updated_ports.empty())
         {
-            System::println("\nThe following %zd ports were updated:", updated_ports.size());
+            System::printfln("\nThe following %zd ports were updated:", updated_ports.size());
             for (const UpdatedPort& p : updated_ports)
             {
-                System::println("    - %-14s %-16s", p.port, p.version_diff.to_string());
+                System::printfln("    - %-14s %-16s", p.port, p.version_diff.to_string());
             }
         }
 
         if (added_ports.empty() && removed_ports.empty() && updated_ports.empty())
         {
-            System::println("There were no changes in the ports between the two commits.");
+            System::printfln("There were no changes in the ports between the two commits.");
         }
 
         Checks::exit_success(VCPKG_LINE_INFO);

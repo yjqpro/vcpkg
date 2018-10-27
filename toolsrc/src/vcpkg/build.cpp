@@ -82,19 +82,19 @@ namespace vcpkg::Build::Command
 
         const auto build_timer = Chrono::ElapsedTimer::create_started();
         const auto result = Build::build_package(paths, build_config, status_db);
-        System::println("Elapsed time for package %s: %s", spec.to_string(), build_timer.to_string());
+        System::printfln("Elapsed time for package %s: %s", spec.to_string(), build_timer.to_string());
 
         if (result.code == BuildResult::CASCADED_DUE_TO_MISSING_DEPENDENCIES)
         {
-            System::println(System::Color::error,
+            System::printfln(System::Color::error,
                             "The build command requires all dependencies to be already installed.");
-            System::println("The following dependencies are missing:");
-            System::println();
+            System::printfln("The following dependencies are missing:");
+            System::printfln();
             for (const auto& p : result.unmet_dependencies)
             {
-                System::println("    %s", p);
+                System::printfln("    %s", p);
             }
-            System::println();
+            System::printfln();
             Checks::exit_fail(VCPKG_LINE_INFO);
         }
 
@@ -102,8 +102,8 @@ namespace vcpkg::Build::Command
 
         if (result.code != BuildResult::SUCCEEDED)
         {
-            System::println(System::Color::error, Build::create_error_message(result.code, spec));
-            System::println(Build::create_user_troubleshooting_message(spec));
+            System::printfln(System::Color::error, Build::create_error_message(result.code, spec));
+            System::printfln(Build::create_user_troubleshooting_message(spec));
             Checks::exit_fail(VCPKG_LINE_INFO);
         }
 
@@ -495,12 +495,12 @@ namespace vcpkg::Build
 
         if (GlobalState::debugging)
         {
-            System::println("[DEBUG] <abientries>");
+            System::printfln("[DEBUG] <abientries>");
             for (auto&& entry : abi_tag_entries)
             {
-                System::println("[DEBUG] %s|%s", entry.key, entry.value);
+                System::printfln("[DEBUG] %s|%s", entry.key, entry.value);
             }
-            System::println("[DEBUG] </abientries>");
+            System::printfln("[DEBUG] </abientries>");
         }
 
         auto abi_tag_entries_missing = abi_tag_entries;
@@ -516,7 +516,7 @@ namespace vcpkg::Build
             return AbiTagAndFile{Hash::get_file_hash(fs, abi_file_path, "SHA1"), abi_file_path};
         }
 
-        System::println(
+        System::printfln(
             "Warning: binary caching disabled because abi keys are missing values:\n%s",
             Strings::join("", abi_tag_entries_missing, [](const AbiEntry& e) { return "    " + e.key + "\n"; }));
 
@@ -622,7 +622,7 @@ namespace vcpkg::Build
 
             if (fs.exists(archive_path))
             {
-                System::println("Using cached binary package: %s", archive_path.u8string());
+                System::printfln("Using cached binary package: %s", archive_path.u8string());
 
                 decompress_archive(paths, spec, archive_path);
 
@@ -636,17 +636,17 @@ namespace vcpkg::Build
             {
                 if (config.build_package_options.fail_on_tombstone == FailOnTombstone::YES)
                 {
-                    System::println("Found failure tombstone: %s", archive_tombstone_path.u8string());
+                    System::printfln("Found failure tombstone: %s", archive_tombstone_path.u8string());
                     return BuildResult::BUILD_FAILED;
                 }
                 else
                 {
-                    System::println(
+                    System::printfln(
                         System::Color::warning, "Found failure tombstone: %s", archive_tombstone_path.u8string());
                 }
             }
 
-            System::println("Could not locate cached archive: %s", archive_path.u8string());
+            System::printfln("Could not locate cached archive: %s", archive_path.u8string());
 
             ExtendedBuildResult result = do_build_package_and_clean_buildtrees(
                 paths, pre_build_info, spec, maybe_abi_tag_and_file.value_or(AbiTagAndFile{}).tag, config);
@@ -667,13 +667,13 @@ namespace vcpkg::Build
                 fs.rename_or_copy(tmp_archive_path, archive_path, ".tmp", ec);
                 if (ec)
                 {
-                    System::println(System::Color::warning,
+                    System::printfln(System::Color::warning,
                                     "Failed to store binary cache %s: %s",
                                     archive_path.u8string(),
                                     ec.message());
                 }
                 else
-                    System::println("Stored binary cache: %s", archive_path.u8string());
+                    System::printfln("Stored binary cache: %s", archive_path.u8string());
             }
             else if (result.code == BuildResult::BUILD_FAILED || result.code == BuildResult::POST_BUILD_CHECKS_FAILED)
             {

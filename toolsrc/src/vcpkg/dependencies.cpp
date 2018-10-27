@@ -591,7 +591,7 @@ namespace vcpkg::Dependencies
                 auto res = follow_plus_dependencies(f, cluster, graph, graph_plan, prevent_default_features);
                 if (res != MarkPlusResult::SUCCESS)
                 {
-                    System::println(System::Color::warning,
+                    System::printfln(System::Color::warning,
                                     "Warning: could not reinstall feature %s",
                                     FeatureSpec{cluster.spec, f});
                 }
@@ -607,7 +607,7 @@ namespace vcpkg::Dependencies
                     auto res = mark_plus(default_feature, cluster, graph, graph_plan, prevent_default_features);
                     if (res != MarkPlusResult::SUCCESS)
                     {
-                        System::println(System::Color::warning,
+                        System::printfln(System::Color::warning,
                                         "Warning: could not install new default feature %s",
                                         FeatureSpec{cluster.spec, default_feature});
                     }
@@ -845,38 +845,38 @@ namespace vcpkg::Dependencies
 
         if (!excluded.empty())
         {
-            System::println("The following packages are excluded:\n%s", actions_to_output_string(excluded));
+            System::printfln("The following packages are excluded:\n%s", actions_to_output_string(excluded));
         }
 
         if (!already_installed_plans.empty())
         {
-            System::println("The following packages are already installed:\n%s",
+            System::printfln("The following packages are already installed:\n%s",
                             actions_to_output_string(already_installed_plans));
         }
 
         if (!rebuilt_plans.empty())
         {
-            System::println("The following packages will be rebuilt:\n%s", actions_to_output_string(rebuilt_plans));
+            System::printfln("The following packages will be rebuilt:\n%s", actions_to_output_string(rebuilt_plans));
         }
 
         if (!new_plans.empty())
         {
-            System::println("The following packages will be built and installed:\n%s",
+            System::printfln("The following packages will be built and installed:\n%s",
                             actions_to_output_string(new_plans));
         }
 
         if (!only_install_plans.empty())
         {
-            System::println("The following packages will be directly installed:\n%s",
+            System::printfln("The following packages will be directly installed:\n%s",
                             actions_to_output_string(only_install_plans));
         }
 
         if (has_non_user_requested_packages)
-            System::println("Additional packages (*) will be modified to complete this operation.");
+            System::printfln("Additional packages (*) will be modified to complete this operation.");
 
         if (!remove_plans.empty() && !is_recursive)
         {
-            System::println(System::Color::warning,
+            System::printfln(System::Color::warning,
                             "If you are sure you want to rebuild the above packages, run the command with the "
                             "--recurse option");
             Checks::exit_fail(VCPKG_LINE_INFO);

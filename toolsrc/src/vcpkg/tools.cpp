@@ -183,7 +183,7 @@ namespace vcpkg
                            tool_name,
                            version_as_string,
                            tool_name);
-        System::println("A suitable version of %s was not found (required v%s). Downloading portable %s v%s...",
+        System::printfln("A suitable version of %s was not found (required v%s). Downloading portable %s v%s...",
                         tool_name,
                         version_as_string,
                         tool_name,
@@ -191,9 +191,9 @@ namespace vcpkg
         auto& fs = paths.get_filesystem();
         if (!fs.exists(tool_data.download_path))
         {
-            System::println("Downloading %s...", tool_name);
+            System::printfln("Downloading %s...", tool_name);
             Downloads::download_file(fs, tool_data.url, tool_data.download_path, tool_data.sha512);
-            System::println("Downloading %s... done.", tool_name);
+            System::printfln("Downloading %s... done.", tool_name);
         }
         else
         {
@@ -202,9 +202,9 @@ namespace vcpkg
 
         if (tool_data.is_archive)
         {
-            System::println("Extracting %s...", tool_name);
+            System::printfln("Extracting %s...", tool_name);
             Archives::extract_archive(paths, tool_data.download_path, tool_data.tool_dir_path);
-            System::println("Extracting %s... done.", tool_name);
+            System::printfln("Extracting %s... done.", tool_name);
         }
         else
         {

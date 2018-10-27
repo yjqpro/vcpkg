@@ -43,7 +43,7 @@ static constexpr int SURVEY_INITIAL_OFFSET_IN_HOURS = SURVEY_INTERVAL_IN_HOURS -
 
 void invalid_command(const std::string& cmd)
 {
-    System::println(System::Color::error, "invalid command: %s", cmd);
+    System::printfln(System::Color::error, "invalid command: %s", cmd);
     Help::print_usage();
     Checks::exit_fail(VCPKG_LINE_INFO);
 }
@@ -102,7 +102,7 @@ static void inner(const VcpkgCmdArguments& args)
 
     Checks::check_exit(VCPKG_LINE_INFO, !vcpkg_root_dir.empty(), "Error: Could not detect vcpkg-root.");
 
-    Debug::println("Using vcpkg-root: %s", vcpkg_root_dir.u8string());
+    Debug::printfln("Using vcpkg-root: %s", vcpkg_root_dir.u8string());
 
     auto default_vs_path = System::get_environment_variable("VCPKG_DEFAULT_VS_PATH").value_or("");
 
@@ -139,7 +139,7 @@ static void inner(const VcpkgCmdArguments& args)
                 if (distribution(generator) == 1)
                 {
                     Metrics::g_metrics.lock()->track_property("surveyprompt", "true");
-                    System::println(
+                    System::printfln(
                         System::Color::success,
                         "Your feedback is important to improve Vcpkg! Please take 3 minutes to complete our survey "
                         "by running: vcpkg contact --survey");
@@ -330,7 +330,7 @@ int main(const int argc, const char* const* const argv)
     Metrics::g_metrics.lock()->track_property("error", exc_msg);
 
     fflush(stdout);
-    System::print("vcpkg.exe has crashed.\n"
+    System::printf("vcpkg.exe has crashed.\n"
                   "Please send an email to:\n"
                   "    %s\n"
                   "containing a brief summary of what you were trying to do and the following data blob:\n"
@@ -345,9 +345,9 @@ int main(const int argc, const char* const* const argv)
     for (int x = 0; x < argc; ++x)
     {
 #if defined(_WIN32)
-        System::println("%s|", Strings::to_utf8(argv[x]));
+        System::printfln("%s|", Strings::to_utf8(argv[x]));
 #else
-        System::println("%s|", argv[x]);
+        System::printfln("%s|", argv[x]);
 #endif
     }
     fflush(stdout);

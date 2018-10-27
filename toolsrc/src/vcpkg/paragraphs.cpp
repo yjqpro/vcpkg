@@ -286,10 +286,10 @@ namespace vcpkg::Paragraphs
             {
                 for (auto&& error : results.errors)
                 {
-                    System::println(
+                    System::printfln(
                         System::Color::warning, "Warning: an error occurred while parsing '%s'", error->name);
                 }
-                System::println(System::Color::warning,
+                System::printfln(System::Color::warning,
                                 "Use '--debug' to get more information about the parse failures.\n");
             }
         }

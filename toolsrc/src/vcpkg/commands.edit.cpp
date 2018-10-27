@@ -159,12 +159,12 @@ namespace vcpkg::Commands::Edit
         const auto it = Util::find_if(candidate_paths, [&](const fs::path& p) { return fs.exists(p); });
         if (it == candidate_paths.cend())
         {
-            System::println(
+            System::printfln(
                 System::Color::error,
                 "Error: Visual Studio Code was not found and the environment variable EDITOR is not set or invalid.");
-            System::println("The following paths were examined:");
+            System::printfln("The following paths were examined:");
             Files::print_paths(candidate_paths);
-            System::println("You can also set the environmental variable EDITOR to your editor of choice.");
+            System::printfln("You can also set the environmental variable EDITOR to your editor of choice.");
             Checks::exit_fail(VCPKG_LINE_INFO);
         }
 

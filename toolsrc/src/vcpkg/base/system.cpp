@@ -225,7 +225,7 @@ namespace vcpkg::System
 
         // Wrapping the command in a single set of quotes causes cmd.exe to correctly execute
         const std::string actual_cmd_line = Strings::format(R"###(cmd.exe /c "%s")###", cmd_line);
-        Debug::println("CreateProcessW(%s)", actual_cmd_line);
+        Debug::printfln("CreateProcessW(%s)", actual_cmd_line);
         bool succeeded = TRUE == CreateProcessW(nullptr,
                                                 Strings::to_utf16(actual_cmd_line).data(),
                                                 nullptr,
@@ -254,7 +254,7 @@ namespace vcpkg::System
         CloseHandle(process_info.hThread);
         CloseHandle(process_info.hProcess);
 
-        Debug::println("CreateProcessW() took %d us", static_cast<int>(timer.microseconds()));
+        Debug::printfln("CreateProcessW() took %d us", static_cast<int>(timer.microseconds()));
     }
 #endif
 
@@ -282,14 +282,14 @@ namespace vcpkg::System
 
         CloseHandle(process_info.hProcess);
 
-        Debug::println("CreateProcessW() returned %lu after %d us", exit_code, static_cast<int>(timer.microseconds()));
+        Debug::printfln("CreateProcessW() returned %lu after %d us", exit_code, static_cast<int>(timer.microseconds()));
 
         return static_cast<int>(exit_code);
 #else
-        Debug::println("system(%s)", cmd_line.c_str());
+        Debug::printfln("system(%s)", cmd_line.c_str());
         fflush(nullptr);
         int rc = system(cmd_line.c_str());
-        Debug::println("system() returned %d after %d us", rc, static_cast<int>(timer.microseconds()));
+        Debug::printfln("system() returned %d after %d us", rc, static_cast<int>(timer.microseconds()));
         return rc;
 #endif
     }
@@ -302,15 +302,15 @@ namespace vcpkg::System
 #if defined(_WIN32)
         // We are wrap the command line in quotes to cause cmd.exe to correctly process it
         const std::string& actual_cmd_line = Strings::format(R"###("%s")###", cmd_line);
-        Debug::println("_wsystem(%s)", actual_cmd_line);
+        Debug::printfln("_wsystem(%s)", actual_cmd_line);
         GlobalState::g_ctrl_c_state.transition_to_spawn_process();
         const int exit_code = _wsystem(Strings::to_utf16(actual_cmd_line).c_str());
         GlobalState::g_ctrl_c_state.transition_from_spawn_process();
-        Debug::println("_wsystem() returned %d", exit_code);
+        Debug::printfln("_wsystem() returned %d", exit_code);
 #else
-        Debug::println("_system(%s)", cmd_line);
+        Debug::printfln("_system(%s)", cmd_line);
         const int exit_code = system(cmd_line.c_str());
-        Debug::println("_system() returned %d", exit_code);
+        Debug::printfln("_system() returned %d", exit_code);
 #endif
         return exit_code;
     }
@@ -322,7 +322,7 @@ namespace vcpkg::System
 #if defined(_WIN32)
         const auto actual_cmd_line = Strings::format(R"###("%s 2>&1")###", cmd_line);
 
-        Debug::println("_wpopen(%s)", actual_cmd_line);
+        Debug::printfln("_wpopen(%s)", actual_cmd_line);
         std::wstring output;
         wchar_t buf[1024];
         GlobalState::g_ctrl_c_state.transition_to_spawn_process();
@@ -355,13 +355,13 @@ namespace vcpkg::System
             output.erase(0, 3);
         }
 
-        Debug::println("_pclose() returned %d after %8d us", ec, static_cast<int>(timer.microseconds()));
+        Debug::printfln("_pclose() returned %d after %8d us", ec, static_cast<int>(timer.microseconds()));
 
         return {ec, Strings::to_utf8(output.c_str())};
 #else
         const auto actual_cmd_line = Strings::format(R"###(%s 2>&1)###", cmd_line);
 
-        Debug::println("popen(%s)", actual_cmd_line);
+        Debug::printfln("popen(%s)", actual_cmd_line);
         std::string output;
         char buf[1024];
         // Flush stdout before launching external process
@@ -382,23 +382,23 @@ namespace vcpkg::System
 
         const auto ec = pclose(pipe);
 
-        Debug::println("_pclose() returned %d after %8d us", ec, (int)timer.microseconds());
+        Debug::printfln("_pclose() returned %d after %8d us", ec, (int)timer.microseconds());
 
         return {ec, output};
 #endif
     }
 
-    void println() { putchar('\n'); }
+    void printfln() { putchar('\n'); }
 
-    void print(const CStringView message) { fputs(message.c_str(), stdout); }
+    void printf(const CStringView message) { fputs(message.c_str(), stdout); }
 
-    void println(const CStringView message)
+    void printfln(const CStringView message)
     {
-        print(message);
-        println();
+        System::printf(message);
+        System::printfln();
     }
 
-    void print(const Color c, const CStringView message)
+    void printf(const Color c, const CStringView message)
     {
 #if defined(_WIN32)
         const HANDLE console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -408,17 +408,17 @@ namespace vcpkg::System
         const auto original_color = console_screen_buffer_info.wAttributes;
 
         SetConsoleTextAttribute(console_handle, static_cast<WORD>(c) | (original_color & 0xF0));
-        print(message);
+        System::printf(message);
         SetConsoleTextAttribute(console_handle, original_color);
 #else
         print(message);
 #endif
     }
 
-    void println(const Color c, const CStringView message)
+    void printfln(const Color c, const CStringView message)
     {
-        print(c, message);
-        println();
+        System::printf(c, message);
+        System::printfln();
     }
 
     Optional<std::string> get_environment_variable(const CStringView varname) noexcept
@@ -528,19 +528,19 @@ namespace vcpkg::System
 
 namespace vcpkg::Debug
 {
-    void println(const CStringView message)
+    void printfln(const CStringView message)
     {
         if (GlobalState::debugging)
         {
-            System::println("[DEBUG] %s", message);
+            System::printfln("[DEBUG] %s", message);
         }
     }
 
-    void println(const System::Color c, const CStringView message)
+    void printfln(const System::Color c, const CStringView message)
     {
         if (GlobalState::debugging)
         {
-            System::println(c, "[DEBUG] %s", message);
+            System::printfln(c, "[DEBUG] %s", message);
         }
     }
 }

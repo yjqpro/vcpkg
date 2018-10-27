@@ -170,7 +170,7 @@ namespace vcpkg::Commands::CI
                     b_will_build = true;
                 }
 
-                System::println("%40s: %1s %8s: %s", p->spec, (b_will_build ? "*" : " "), state, abi);
+                System::printfln("%40s: %1s %8s: %s", p->spec, (b_will_build ? "*" : " "), state, abi);
             }
         }
 
@@ -181,7 +181,7 @@ namespace vcpkg::Commands::CI
     {
         if (!GlobalState::g_binary_caching)
         {
-            System::println(System::Color::warning, "Warning: Running ci without binary caching!");
+            System::printfln(System::Color::warning, "Warning: Running ci without binary caching!");
         }
 
         const ParsedArguments options = args.parse_arguments(COMMAND_STRUCTURE);
@@ -288,8 +288,8 @@ namespace vcpkg::Commands::CI
 
         for (auto&& result : results)
         {
-            System::println("\nTriplet: %s", result.triplet);
-            System::println("Total elapsed time: %s", result.summary.total_elapsed_time);
+            System::printfln("\nTriplet: %s", result.triplet);
+            System::printfln("Total elapsed time: %s", result.summary.total_elapsed_time);
             result.summary.print();
         }
 

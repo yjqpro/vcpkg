@@ -60,7 +60,7 @@ namespace vcpkg::Commands::Version
             {
                 if (maj1 != maj2 || min1 != min2 || rev1 != rev2)
                 {
-                    System::println(System::Color::warning,
+                    System::printfln(System::Color::warning,
                                     "Warning: Different source is available for vcpkg (%d.%d.%d -> %d.%d.%d). Use "
                                     ".\\bootstrap-vcpkg.bat to update.",
                                     maj2,
@@ -85,7 +85,7 @@ namespace vcpkg::Commands::Version
     {
         Util::unused(args.parse_arguments(COMMAND_STRUCTURE));
 
-        System::println("Vcpkg package management program version %s\n"
+        System::printfln("Vcpkg package management program version %s\n"
                         "\n"
                         "See LICENSE.txt for license information.",
                         version());
