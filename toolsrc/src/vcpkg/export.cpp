@@ -12,6 +12,7 @@
 
 #include <vcpkg/base/stringliteral.h>
 #include <vcpkg/base/system.h>
+#include <vcpkg/base/system.process.h>
 #include <vcpkg/base/util.h>
 
 namespace vcpkg::Export

@@ -1,9 +1,11 @@
 #include "pch.h"
 
-#include <vcpkg/base/files.h>
-#include <vcpkg/base/system.h>
 #include <vcpkg/commands.h>
 #include <vcpkg/help.h>
+
+#include <vcpkg/base/files.h>
+#include <vcpkg/base/system.h>
+#include <vcpkg/base/system.process.h>
 
 namespace vcpkg::Commands::Create
 {

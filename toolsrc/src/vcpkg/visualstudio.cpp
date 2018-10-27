@@ -2,10 +2,12 @@
 
 #if defined(_WIN32)
 
+#include <vcpkg/visualstudio.h>
+
 #include <vcpkg/base/sortedvector.h>
 #include <vcpkg/base/stringrange.h>
+#include <vcpkg/base/system.process.h>
 #include <vcpkg/base/util.h>
-#include <vcpkg/visualstudio.h>
 
 namespace vcpkg::VisualStudio
 {
@@ -130,9 +132,9 @@ namespace vcpkg::VisualStudio
         {
             // We want lexically_normal(), but it is not available
             // Correct root path might be 2 or 3 levels up, depending on if the path has trailing backslash. Try both.
-            auto common7_tools = fs::path {*path_as_string};
-            append_if_has_cl(fs::path {*path_as_string}.parent_path().parent_path());
-            append_if_has_cl(fs::path {*path_as_string}.parent_path().parent_path().parent_path());
+            auto common7_tools = fs::path{*path_as_string};
+            append_if_has_cl(fs::path{*path_as_string}.parent_path().parent_path());
+            append_if_has_cl(fs::path{*path_as_string}.parent_path().parent_path().parent_path());
         }
 
         // VS2015 instance from Program Files
@@ -143,7 +145,7 @@ namespace vcpkg::VisualStudio
 
     std::vector<std::string> get_visual_studio_instances(const VcpkgPaths& paths)
     {
-        std::vector<VisualStudioInstance> sorted {get_visual_studio_instances_internal(paths)};
+        std::vector<VisualStudioInstance> sorted{get_visual_studio_instances_internal(paths)};
         std::sort(sorted.begin(), sorted.end(), VisualStudioInstance::preferred_first_comparator);
         return Util::fmap(sorted, [](const VisualStudioInstance& instance) { return instance.to_string(); });
     }
@@ -160,8 +162,8 @@ namespace vcpkg::VisualStudio
         std::vector<Toolset> found_toolsets;
         std::vector<Toolset> excluded_toolsets;
 
-        const SortedVector<VisualStudioInstance> sorted {get_visual_studio_instances_internal(paths),
-                                                         VisualStudioInstance::preferred_first_comparator};
+        const SortedVector<VisualStudioInstance> sorted{get_visual_studio_instances_internal(paths),
+                                                        VisualStudioInstance::preferred_first_comparator};
 
         const bool v140_is_available = Util::find_if(sorted, [&](const VisualStudioInstance& vs_instance) {
                                            return vs_instance.major_version() == "14";
@@ -217,7 +219,7 @@ namespace vcpkg::VisualStudio
                     paths_examined.push_back(dumpbin_path);
                     if (fs.exists(dumpbin_path))
                     {
-                        const Toolset v141_toolset {
+                        const Toolset v141_toolset{
                             vs_instance.root_path, dumpbin_path, vcvarsall_bat, {}, V_141, supported_architectures};
 
                         const auto english_language_pack = dumpbin_path.parent_path() / "1033";
@@ -232,12 +234,12 @@ namespace vcpkg::VisualStudio
 
                         if (v140_is_available)
                         {
-                            const Toolset v140_toolset {vs_instance.root_path,
-                                                        dumpbin_path,
-                                                        vcvarsall_bat,
-                                                        {"-vcvars_ver=14.0"},
-                                                        V_140,
-                                                        supported_architectures};
+                            const Toolset v140_toolset{vs_instance.root_path,
+                                                       dumpbin_path,
+                                                       vcvarsall_bat,
+                                                       {"-vcvars_ver=14.0"},
+                                                       V_140,
+                                                       supported_architectures};
                             found_toolsets.push_back(v140_toolset);
                         }
 

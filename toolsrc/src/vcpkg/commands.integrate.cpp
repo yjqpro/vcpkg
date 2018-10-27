@@ -1,12 +1,14 @@
 #include "pch.h"
 
-#include <vcpkg/base/checks.h>
-#include <vcpkg/base/files.h>
-#include <vcpkg/base/system.h>
-#include <vcpkg/base/util.h>
 #include <vcpkg/commands.h>
 #include <vcpkg/metrics.h>
 #include <vcpkg/userconfig.h>
+
+#include <vcpkg/base/checks.h>
+#include <vcpkg/base/files.h>
+#include <vcpkg/base/system.h>
+#include <vcpkg/base/system.process.h>
+#include <vcpkg/base/util.h>
 
 namespace vcpkg::Commands::Integrate
 {

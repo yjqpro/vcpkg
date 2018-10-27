@@ -383,5 +383,8 @@
     <ClInclude Include="..\include\vcpkg\base\downloads.h">
       <Filter>Header Files\vcpkg\base</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\vcpkg\base\system.process.h">
+      <Filter>Header Files\vcpkg\base</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -7,6 +7,7 @@
 
 #include <vcpkg/base/sortedvector.h>
 #include <vcpkg/base/system.h>
+#include <vcpkg/base/system.process.h>
 #include <vcpkg/base/util.h>
 
 namespace vcpkg::Commands::PortsDiff

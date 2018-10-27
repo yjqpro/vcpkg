@@ -5,6 +5,8 @@
 #include <vcpkg/export.ifw.h>
 #include <vcpkg/install.h>
 
+#include <vcpkg/base/system.process.h>
+
 namespace vcpkg::Export::IFW
 {
     using Dependencies::ExportPlanAction;

@@ -10,10 +10,6 @@
 #include <unistd.h>
 #endif
 
-#include <vcpkg/base/chrono.h>
-#include <vcpkg/base/files.h>
-#include <vcpkg/base/strings.h>
-#include <vcpkg/base/system.h>
 #include <vcpkg/commands.h>
 #include <vcpkg/globalstate.h>
 #include <vcpkg/help.h>
@@ -22,6 +18,12 @@
 #include <vcpkg/paragraphs.h>
 #include <vcpkg/userconfig.h>
 #include <vcpkg/vcpkglib.h>
+
+#include <vcpkg/base/chrono.h>
+#include <vcpkg/base/files.h>
+#include <vcpkg/base/strings.h>
+#include <vcpkg/base/system.h>
+#include <vcpkg/base/system.process.h>
 
 #include <cassert>
 #include <fstream>

@@ -1,14 +1,16 @@
 #include "pch.h"
 
-#include <vcpkg/base/cofffilereader.h>
-#include <vcpkg/base/files.h>
-#include <vcpkg/base/system.h>
-#include <vcpkg/base/util.h>
 #include <vcpkg/build.h>
 #include <vcpkg/packagespec.h>
 #include <vcpkg/postbuildlint.buildtype.h>
 #include <vcpkg/postbuildlint.h>
 #include <vcpkg/vcpkgpaths.h>
+
+#include <vcpkg/base/cofffilereader.h>
+#include <vcpkg/base/files.h>
+#include <vcpkg/base/system.h>
+#include <vcpkg/base/system.process.h>
+#include <vcpkg/base/util.h>
 
 using vcpkg::Build::BuildInfo;
 using vcpkg::Build::BuildPolicy;

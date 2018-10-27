@@ -159,6 +159,7 @@
     <ClInclude Include="..\include\vcpkg\base\stringrange.h" />
     <ClInclude Include="..\include\vcpkg\base\strings.h" />
     <ClInclude Include="..\include\vcpkg\base\system.h" />
+    <ClInclude Include="..\include\vcpkg\base\system.process.h" />
     <ClInclude Include="..\include\vcpkg\base\util.h" />
     <ClInclude Include="..\include\vcpkg\binaryparagraph.h" />
     <ClInclude Include="..\include\vcpkg\build.h" />
