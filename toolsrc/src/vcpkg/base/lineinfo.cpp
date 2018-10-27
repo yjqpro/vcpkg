@@ -5,5 +5,8 @@
 
 namespace vcpkg
 {
-    std::string LineInfo::to_string() const { return Strings::format("%s(%d)", this->file_name, this->line_number); }
+    std::string LineInfo::to_string() const
+    {
+        return Strings::format("%s(%d)", this->m_file_name, this->m_line_number);
+    }
 }

@@ -102,3 +102,8 @@ namespace vcpkg::Checks
         }
     }
 }
+
+namespace vcpkg::details
+{
+    void exit_if_null(bool b, const LineInfo& line_info) { Checks::check_exit(line_info, b, "Value was null"); }
+}

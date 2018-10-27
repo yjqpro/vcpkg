@@ -2,6 +2,8 @@
 
 #include <vcpkg/globalstate.h>
 
+#include <vcpkg/base/checks.h>
+
 namespace vcpkg
 {
     Util::LockGuarded<Chrono::ElapsedTimer> GlobalState::timer;

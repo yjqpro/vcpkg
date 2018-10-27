@@ -1,6 +1,9 @@
 #pragma once
 
-#include <vcpkg/base/checks.h>
+#include <vcpkg/base/lineinfo.h>
+
+#include <type_traits>
+#include <utility>
 
 namespace vcpkg
 {
@@ -43,6 +46,9 @@ namespace vcpkg
         private:
             T* m_t;
         };
+
+        // Note: implemented in checks.cpp to cut the header dependency
+        void exit_if_null(bool b, const LineInfo& line_info);
     }
 
     template<class T>
@@ -53,26 +59,26 @@ namespace vcpkg
         // Constructors are intentionally implicit
         constexpr Optional(NullOpt) {}
 
-        template<class U>
+        template<class U, class = std::enable_if_t<!std::is_same<std::decay_t<U>, Optional>::value>>
         Optional(U&& t) : m_base(std::forward<U>(t))
         {
         }
 
         T&& value_or_exit(const LineInfo& line_info) &&
         {
-            this->exit_if_null(line_info);
+            details::exit_if_null(this->m_base.has_value(), line_info);
             return std::move(this->m_base.value());
         }
 
         T& value_or_exit(const LineInfo& line_info) &
         {
-            this->exit_if_null(line_info);
+            details::exit_if_null(this->m_base.has_value(), line_info);
             return this->m_base.value();
         }
 
         const T& value_or_exit(const LineInfo& line_info) const&
         {
-            this->exit_if_null(line_info);
+            details::exit_if_null(this->m_base.has_value(), line_info);
             return this->m_base.value();
         }
 
@@ -101,11 +107,6 @@ namespace vcpkg
         typename std::add_pointer<T>::type get() { return this->m_base.has_value() ? &this->m_base.value() : nullptr; }
 
     private:
-        void exit_if_null(const LineInfo& line_info) const
-        {
-            Checks::check_exit(line_info, this->m_base.has_value(), "Value was null");
-        }
-
         details::OptionalStorage<T> m_base;
     };
 
