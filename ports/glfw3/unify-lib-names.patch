@@ -1,0 +1,42 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b1476bd..927659d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -51,7 +51,7 @@ if (BUILD_SHARED_LIBS)
+     set(_GLFW_BUILD_DLL 1)
+ endif()
+ 
+-if (BUILD_SHARED_LIBS AND UNIX)
++if (BUILD_SHARED_LIBS AND UNIX AND 0)
+     # On Unix-like systems, shared libraries can use the soname system.
+     set(GLFW_LIB_NAME glfw)
+ else()
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 5042aba..5bd4bcd 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -82,7 +82,7 @@ target_compile_options(glfw PRIVATE
+                        "$<$<C_COMPILER_ID:GNU>:-Wall>")
+ 
+ if (BUILD_SHARED_LIBS)
+-    if (WIN32)
++    if (WIN32 AND 0)
+         if (MINGW)
+             # Remove the lib prefix on the DLL (but not the import library
+             set_target_properties(glfw PROPERTIES PREFIX "")
+@@ -115,6 +115,6 @@ if (MSVC)
+ endif()
+ 
+ if (GLFW_INSTALL)
+-    install(TARGETS glfw EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX})
++    install(TARGETS glfw EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX} RUNTIME DESTINATION bin)
+ endif()
+ 
+diff --git a/src/glfw3Config.cmake.in b/src/glfw3Config.cmake.in
+index 1fa200e..08f8348 100644
+--- a/src/glfw3Config.cmake.in
++++ b/src/glfw3Config.cmake.in
+@@ -1 +1,3 @@
+ include("${CMAKE_CURRENT_LIST_DIR}/glfw3Targets.cmake")
++set(GLFW3_LIBRARIES glfw)
++set(GLFW3_LIBRARY glfw)
