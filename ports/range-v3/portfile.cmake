@@ -2,8 +2,8 @@ include(vcpkg_common_functions)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO caseycarter/range-v3
-    HEAD_REF msvc
+    REPO ericniebler/range-v3
+    HEAD_REF master
 )
 
 vcpkg_configure_cmake(
