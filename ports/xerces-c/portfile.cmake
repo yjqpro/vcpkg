@@ -9,6 +9,14 @@ vcpkg_from_github(
     PATCHES disable-tests.patch
 )
 
+if(NOT VCPKG_CMAKE_SYSTEM_NAME OR VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+    set(network-accessor -Dnetwork-accessor=winsock)
+    set(transcoder -Dtranscoder=windows)
+else()
+    set(network-accessor -Dnetwork-accessor=curl)
+    set(transcoder)
+endif()
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
@@ -16,6 +24,9 @@ vcpkg_configure_cmake(
         -DDISABLE_TESTS=ON
         -DDISABLE_DOC=ON
         -DDISABLE_SAMPLES=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_ICU=ON
+        ${network-accessor}
+        ${transcoder}
 )
 
 vcpkg_install_cmake()
