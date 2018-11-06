@@ -1,8 +1,7 @@
+include(vcpkg_common_functions)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO SOCI/soci
-    REF 3742c894ab8ba5fd51b6a156980e8b34db0f3063 #version 4.0.0 commit on 2019.11.10
-    SHA512 27950230d104bdc0ab8e439a69c59d1b157df373adc863a22c8332b8bb896c2a6e3028f8343bb36b42bf9ab2a2312375e20cbdeca7f497f0bb1424a4733f0c9c
     HEAD_REF master
 )
 
@@ -30,25 +29,28 @@ vcpkg_configure_cmake(
     PREFER_NINJA
     OPTIONS
         -DSOCI_TESTS=OFF
-        -DSOCI_CXX11=ON
-        -DSOCI_LIBDIR:STRING=lib # This is to always have output in the lib folder and not lib64 for 64-bit builds
-        -DLIBDIR:STRING=lib
+        -DSOCI_CXX_C11=ON
+        -DSOCI_LIBDIR=lib # This is to always have output in the lib folder and not lib64 for 64-bit builds
         -DSOCI_STATIC=${SOCI_STATIC}
         -DSOCI_SHARED=${SOCI_DYNAMIC}
-        ${_COMPONENT_FLAGS}
-
-        -DWITH_MYSQL=OFF
-        -DWITH_ORACLE=OFF
-        -DWITH_FIREBIRD=OFF
-        -DWITH_DB2=OFF
 )
 
+
+
 vcpkg_install_cmake()
-vcpkg_fixup_cmake_targets(CONFIG_PATH cmake TARGET_PATH share/SOCI)
-
-file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include ${CURRENT_PACKAGES_DIR}/debug/share)
-
+file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/share/soci)
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
+file(RENAME ${CURRENT_PACKAGES_DIR}/cmake/SOCI.cmake ${CURRENT_PACKAGES_DIR}/share/soci/SOCIConfig.cmake)
+file(RENAME ${CURRENT_PACKAGES_DIR}/cmake/SOCI-release.cmake ${CURRENT_PACKAGES_DIR}/share/soci/SOCI-release.cmake)
+file(RENAME ${CURRENT_PACKAGES_DIR}/debug/cmake/SOCI-debug.cmake ${CURRENT_PACKAGES_DIR}/share/soci/SOCI-debug.cmake)
+file(READ ${CURRENT_PACKAGES_DIR}/share/soci/SOCIConfig.cmake CONFIG_FILE)
+set(pattern "get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)\n")
+string(REPLACE "${pattern}" "${pattern}${pattern}" CONFIG_FILE ${CONFIG_FILE})
+file(WRITE ${CURRENT_PACKAGES_DIR}/share/soci/SOCIConfig.cmake ${CONFIG_FILE})
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/cmake)
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/cmake)
 # Handle copyright
-file(INSTALL ${SOURCE_PATH}/LICENSE_1_0.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
+file(COPY ${SOURCE_PATH}/LICENSE_1_0.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/soci)
+file(RENAME ${CURRENT_PACKAGES_DIR}/share/soci/LICENSE_1_0.txt ${CURRENT_PACKAGES_DIR}/share/soci/copyright)
 
 vcpkg_copy_pdbs()
