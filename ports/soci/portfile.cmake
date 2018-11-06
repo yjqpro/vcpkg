@@ -2,31 +2,11 @@ include(vcpkg_common_functions)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO SOCI/soci
-    REF ac3aa20d238d1ce1c7bcfffa4c4ce557c5c12351
-    SHA512 b334f03945a84154a1d0b5c3b1eee4e288225a0a76446316bf3878cc4afc630bd1b31eab23f78ce5e3b2dbf8490c36d6fdcf48f25f9806004111852d7efbdf15
     HEAD_REF master
-	PATCHES
-        mysql-include-header.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic" SOCI_DYNAMIC)
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" SOCI_STATIC)
-
-# Handle features
-set(_COMPONENT_FLAGS "")
-foreach(_feature IN LISTS ALL_FEATURES)
-    # Uppercase the feature name and replace "-" with "_"
-    string(TOUPPER "${_feature}" _FEATURE)
-    string(REPLACE "-" "_" _FEATURE "${_FEATURE}")
-
-    # Turn "-DWITH_*=" ON or OFF depending on whether the feature
-    # is in the list.
-    if(_feature IN_LIST FEATURES)
-        list(APPEND _COMPONENT_FLAGS "-DWITH_${_FEATURE}=ON")
-    else()
-        list(APPEND _COMPONENT_FLAGS "-DWITH_${_FEATURE}=OFF")
-    endif()
-endforeach()
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
@@ -37,7 +17,6 @@ vcpkg_configure_cmake(
         -DSOCI_LIBDIR=lib # This is to always have output in the lib folder and not lib64 for 64-bit builds
         -DSOCI_STATIC=${SOCI_STATIC}
         -DSOCI_SHARED=${SOCI_DYNAMIC}
-        -DWITH_MYSQL=ON
 )
 
 
