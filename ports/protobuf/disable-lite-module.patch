@@ -1,0 +1,13 @@
+diff --git a/cmake/protobuf-module.cmake.in b/cmake/protobuf-module.cmake.in
+index 74c5488..660e0cc 100644
+--- a/cmake/protobuf-module.cmake.in
++++ b/cmake/protobuf-module.cmake.in
+@@ -130,7 +130,7 @@ endif()
+ _protobuf_find_libraries(Protobuf protobuf)
+ 
+ # The Protobuf Lite library
+-_protobuf_find_libraries(Protobuf_LITE protobuf-lite)
++# _protobuf_find_libraries(Protobuf_LITE protobuf-lite)
+ 
+ # The Protobuf Protoc Library
+ _protobuf_find_libraries(Protobuf_PROTOC protoc)
