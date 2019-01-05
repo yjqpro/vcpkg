@@ -1,12 +1,3 @@
-From f6f110a8dd3dfd8896618292a32035cd26d0b425 Mon Sep 17 00:00:00 2001
-From: yjqpro <yjqpro@gmail.com>
-Date: Fri, 4 Jan 2019 06:12:58 +0800
-Subject: [PATCH] cmake _abs_file instread of ABS_FIL
-
----
- cmake/protobuf-config.cmake.in | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
 diff --git a/cmake/protobuf-config.cmake.in b/cmake/protobuf-config.cmake.in
 index acedcc7a..e3f68dbf 100644
 --- a/cmake/protobuf-config.cmake.in
@@ -16,10 +7,7 @@ index acedcc7a..e3f68dbf 100644
        COMMAND  protobuf::protoc
        ARGS --${protobuf_generate_LANGUAGE}_out ${_dll_export_decl}${CMAKE_CURRENT_BINARY_DIR} ${_protobuf_include_path} ${_abs_file}
 -      DEPENDS ${ABS_FIL} protobuf::protoc
-+      DEPENDS ${_abs_fil} protobuf::protoc
++      DEPENDS ${_abs_file} protobuf::protoc
        COMMENT "Running ${protobuf_generate_LANGUAGE} protocol buffer compiler on ${_proto}"
        VERBATIM )
    endforeach()
--- 
-2.17.0
-
