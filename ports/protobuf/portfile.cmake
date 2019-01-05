@@ -9,7 +9,8 @@ vcpkg_from_github(
     PATCHES
         fix-uwp.patch
         fix-ABS_FIL.patch
-        # disable-lite.patch
+        disable-lite.patch
+        disable-lite-module.patch
 )
 
 if(CMAKE_HOST_WIN32 AND NOT VCPKG_TARGET_ARCHITECTURE MATCHES "x64" AND NOT VCPKG_TARGET_ARCHITECTURE MATCHES "x86")
