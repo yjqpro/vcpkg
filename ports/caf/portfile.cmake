@@ -12,13 +12,19 @@ vcpkg_from_github(
     SHA512 7e7962bf5a30122bde8be63f6de0058f865bd890e2d10f4d90f4885b7953467fb6532f69c1a77a35802de7c531f6aac192a2993b53a8dc0b05f503c3f4083a31
     HEAD_REF master
 	PATCHES
-		openssl-version-override.patch
+		# openssl-version-override.patch
+        0001-modern-cmake-for-caf-core.patch
+        0002-modern-cmake-for-caf-io.patch
+        0003-modern-cmake.patch
 )
+
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/caf-config.cmake.in DESTINATION ${SOURCE_PATH}/cmake)
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
     OPTIONS
+        -DCMAKE_DEBUG_POSTFIX=d
         -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=ON
         -DCAF_BUILD_STATIC=ON
         -DCAF_BUILD_STATIC_ONLY=ON
@@ -26,15 +32,30 @@ vcpkg_configure_cmake(
         -DCAF_NO_EXAMPLES=ON
         -DCAF_NO_BENCHMARKS=ON
         -DCAF_NO_UNIT_TESTS=ON
-        -DCAF_NO_PROTOBUF_EXAMPLES=ON
+        -DCAF_NO_caf_EXAMPLES=ON
         -DCAF_NO_QT_EXAMPLES=ON
         -DCAF_NO_OPENCL=ON
-        -DCAF_NO_OPENSSL=OFF
+        -DCAF_NO_OPENSSL=ON
         -DCAF_NO_CURL_EXAMPLES=ON
         -DCAF_OPENSSL_VERSION_OVERRIDE=ON
+        -DCAF_NO_PYTHON=ON 
 )
 
+
 vcpkg_install_cmake()
+
+
+if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
+    file(READ ${CURRENT_PACKAGES_DIR}/debug/share/caf/caf-core-targets-debug.cmake CORE_DEBUG_MODULE)
+    string(REPLACE "\${_IMPORT_PREFIX}" "\${_IMPORT_PREFIX}/debug" CORE_DEBUG_MODULE "${CORE_DEBUG_MODULE}")
+    string(REPLACE "\${_IMPORT_PREFIX}/debug/bin/protoc${EXECUTABLE_SUFFIX}" "\${_IMPORT_PREFIX}/tools/caf/protoc${EXECUTABLE_SUFFIX}" CORE_DEBUG_MODULE "${CORE_DEBUG_MODULE}")
+    file(WRITE ${CURRENT_PACKAGES_DIR}/share/caf/caf-core-targets-debug.cmake "${CORE_DEBUG_MODULE}")
+
+    file(READ ${CURRENT_PACKAGES_DIR}/debug/share/caf/caf-io-targets-debug.cmake IO_DEBUG_MODULE)
+    string(REPLACE "\${_IMPORT_PREFIX}" "\${_IMPORT_PREFIX}/debug" IO_DEBUG_MODULE "${IO_DEBUG_MODULE}")
+    string(REPLACE "\${_IMPORT_PREFIX}/debug/bin/protoc${EXECUTABLE_SUFFIX}" "\${_IMPORT_PREFIX}/tools/caf/protoc${EXECUTABLE_SUFFIX}" IO_DEBUG_MODULE "${IO_DEBUG_MODULE}")
+    file(WRITE ${CURRENT_PACKAGES_DIR}/share/caf/caf-io-targets-debug.cmake "${IO_DEBUG_MODULE}")
+endif()
 
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include ${CURRENT_PACKAGES_DIR}/debug/share)
 
