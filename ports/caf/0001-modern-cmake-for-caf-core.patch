@@ -30,6 +30,8 @@ index 15ef0e0..807e0a0 100644
 +
 +target_link_libraries(core PUBLIC ${CAF_EXTRA_LDFLAGS})
 +
++target_compile_features(core PUBLIC cxx_std_11)
++
 +set_target_properties(core
 +  PROPERTIES
      SOVERSION ${CAF_VERSION}
