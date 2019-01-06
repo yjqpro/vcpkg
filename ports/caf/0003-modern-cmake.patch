@@ -1,0 +1,103 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cb6a7f3..b5043b8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -334,34 +334,35 @@ if(CAF_IOS_DEPLOYMENT_TARGET)
+                  "-miphoneos-version-min=${CAF_IOS_DEPLOYMENT_TARGET}")
+   endif()
+ endif()
+-# check if the user provided CXXFLAGS, set defaults otherwise
+-if(NOT CMAKE_CXX_FLAGS)
+-  set(CMAKE_CXX_FLAGS                   "-std=c++11 -Wextra -Wall -pedantic ${EXTRA_FLAGS}")
+-endif()
+-if (NOT "${CMAKE_CXX_FLAGS}" MATCHES "-std=")
+-  message(STATUS "Supplied CXXFLAGS do not contain a C++ standard, setting std to c++11")
+-  set(CMAKE_CXX_FLAGS                   "-std=c++11 ${CMAKE_CXX_FLAGS}")
+-endif()
+-if(NOT CMAKE_CXX_FLAGS_DEBUG)
+-  set(CMAKE_CXX_FLAGS_DEBUG             "-O0 -g")
+-endif()
+-if(NOT CMAKE_CXX_FLAGS_MINSIZEREL)
+-  set(CMAKE_CXX_FLAGS_MINSIZEREL        "-Os")
+-endif()
+-if(NOT CMAKE_CXX_FLAGS_RELEASE)
+-  set(CMAKE_CXX_FLAGS_RELEASE           "-O3 -DNDEBUG")
+-endif()
+-if(NOT CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "-O2 -g -fno-omit-frame-pointer")
+-endif()
+-# set build default build type to RelWithDebInfo if not set
+-if(NOT CMAKE_BUILD_TYPE)
+-  set(CMAKE_BUILD_TYPE RelWithDebInfo)
+-endif()
+-# needed by subprojects
+-if (DEFINED CMAKE_LD_LIBS)
+-  list(APPEND ${CMAKE_LD_LIBS})
+-endif()
++
++## check if the user provided CXXFLAGS, set defaults otherwise
++#if(NOT CMAKE_CXX_FLAGS)
++#  set(CMAKE_CXX_FLAGS                   "-std=c++11 -Wextra -Wall -pedantic ${EXTRA_FLAGS}")
++#endif()
++#if (NOT "${CMAKE_CXX_FLAGS}" MATCHES "-std=")
++#  message(STATUS "Supplied CXXFLAGS do not contain a C++ standard, setting std to c++11")
++#  set(CMAKE_CXX_FLAGS                   "-std=c++11 ${CMAKE_CXX_FLAGS}")
++#endif()
++#if(NOT CMAKE_CXX_FLAGS_DEBUG)
++#  set(CMAKE_CXX_FLAGS_DEBUG             "-O0 -g")
++#endif()
++#if(NOT CMAKE_CXX_FLAGS_MINSIZEREL)
++#  set(CMAKE_CXX_FLAGS_MINSIZEREL        "-Os")
++#endif()
++#if(NOT CMAKE_CXX_FLAGS_RELEASE)
++#  set(CMAKE_CXX_FLAGS_RELEASE           "-O3 -DNDEBUG")
++#endif()
++#if(NOT CMAKE_CXX_FLAGS_RELWITHDEBINFO)
++#  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "-O2 -g -fno-omit-frame-pointer")
++#endif()
++## set build default build type to RelWithDebInfo if not set
++#if(NOT CMAKE_BUILD_TYPE)
++#  set(CMAKE_BUILD_TYPE RelWithDebInfo)
++#endif()
++## needed by subprojects
++#if (DEFINED CMAKE_LD_LIBS)
++#  list(APPEND ${CMAKE_LD_LIBS})
++#endif()
+ 
+ ################################################################################
+ #                                setup logging                                 #
+@@ -398,6 +399,7 @@ add_custom_target(uninstall
+                   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+ 
+ 
++
+ ################################################################################
+ #                       set inclue paths for subprojects                       #
+ ################################################################################
+@@ -663,6 +665,26 @@ add_subdirectory(doc)
+ file(GLOB_RECURSE script_files "scripts/*")
+ add_custom_target(gui_dummy SOURCES configure ${script_files})
+ 
++##############################################################################
++# install
++##############################################################################
++
++include(CMakePackageConfigHelpers)
++
++configure_package_config_file(
++  ${CMAKE_SOURCE_DIR}/cmake/caf-config.cmake.in
++  ${CMAKE_BINARY_DIR}/cmake/caf-config.cmake
++  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}
++)
++
++install(
++  FILES
++    ${CMAKE_BINARY_DIR}/cmake/caf-config.cmake
++  DESTINATION share/caf
++)
++
++
++
+ ################################################################################
+ #                                print summary                                 #
+ ################################################################################
