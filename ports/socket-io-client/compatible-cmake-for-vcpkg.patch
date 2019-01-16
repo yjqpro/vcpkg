@@ -1,0 +1,138 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8c2fad3..4ba1503 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,25 +1,13 @@
+ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+ PROJECT(sioclient)
+ 
+-option(BUILD_SHARED_LIBS "Build the shared library" OFF)
+-option(Boost_USE_STATIC_LIBS "Use Boost static version" ON)
+-
+ set(MAJOR 1)
+ set(MINOR 6)
+ set(PATCH 0)
+ 
+-if(NOT CMAKE_BUILD_TYPE )
+-MESSAGE(STATUS "not define build type, set to release" )
+-set(CMAKE_BUILD_TYPE Release )
+-elseif(NOT (${CMAKE_BUILD_TYPE} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE} STREQUAL "Debug" ))
+-MESSAGE(SEND_ERROR "CMAKE_BUILD_TYPE must be either Release or Debug")
+-return()
+-endif()
+ 
+ set(BOOST_VER "1.55.0" CACHE STRING "boost version" )
+ 
+-set(Boost_USE_MULTITHREADED ON) 
+-set(Boost_USE_STATIC_RUNTIME OFF) 
+ find_package(Boost ${BOOST_VER} REQUIRED COMPONENTS system date_time random) 
+ 
+ aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src ALL_SRC)
+@@ -28,15 +16,24 @@ file(GLOB ALL_HEADERS ${CMAKE_CURRENT_LIST_DIR}/src/*.h )
+ set(SIO_INCLUDEDIR ${CMAKE_CURRENT_LIST_DIR})
+ 
+ add_library(sioclient ${ALL_SRC})
+-target_include_directories(sioclient PRIVATE ${Boost_INCLUDE_DIRS} 
+-    ${CMAKE_CURRENT_LIST_DIR}/src 
++target_include_directories(sioclient 
++  PUBLIC
++  "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>"
++  "$<INSTALL_INTERFACE:include/socket-io-client>"
++  PRIVATE 
+     ${CMAKE_CURRENT_LIST_DIR}/lib/websocketpp 
+     ${CMAKE_CURRENT_LIST_DIR}/lib/rapidjson/include
+ )
+ 
+ set_property(TARGET sioclient PROPERTY CXX_STANDARD 11)
+ set_property(TARGET sioclient PROPERTY CXX_STANDARD_REQUIRED ON)
+-target_link_libraries(sioclient PRIVATE ${Boost_LIBRARIES})
++target_link_libraries(sioclient 
++  PRIVATE 
++    Boost::boost
++    Boost::system
++    Boost::date_time
++    Boost::random
++)
+ if(BUILD_SHARED_LIBS)
+ set_target_properties(sioclient
+ 	PROPERTIES
+@@ -49,8 +46,11 @@ list(APPEND TARGET_LIBRARIES sioclient)
+ find_package(OpenSSL)
+ if(OPENSSL_FOUND)
+ add_library(sioclient_tls ${ALL_SRC})
+-target_include_directories(sioclient_tls PRIVATE ${Boost_INCLUDE_DIRS} 
+-    ${CMAKE_CURRENT_LIST_DIR}/src 
++target_include_directories(sioclient_tls 
++  PUBLIC
++    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>"
++    "$<INSTALL_INTERFACE:include/socket-io-client>"
++  PRIVATE 
+     ${CMAKE_CURRENT_LIST_DIR}/lib/websocketpp 
+     ${CMAKE_CURRENT_LIST_DIR}/lib/rapidjson/include
+     ${OPENSSL_INCLUDE_DIR}
+@@ -58,7 +58,14 @@ target_include_directories(sioclient_tls PRIVATE ${Boost_INCLUDE_DIRS}
+ 
+ set_property(TARGET sioclient_tls PROPERTY CXX_STANDARD 11)
+ set_property(TARGET sioclient_tls PROPERTY CXX_STANDARD_REQUIRED ON)
+-target_link_libraries(sioclient_tls PRIVATE ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES} )
++target_link_libraries(sioclient_tls 
++  PRIVATE 
++    Boost::boost
++    Boost::system
++    Boost::date_time
++    Boost::random
++    ${OPENSSL_LIBRARIES} 
++)
+ target_compile_definitions(sioclient_tls PRIVATE -DSIO_TLS)
+ if(BUILD_SHARED_LIBS)
+ set_target_properties(sioclient_tls
+@@ -71,14 +78,43 @@ list(APPEND TARGET_LIBRARIES sioclient_tls)
+ 
+ endif()
+ 
++include(GNUInstallDirs)
++
++include (CMakePackageConfigHelpers)
++
++set(socket_io_client_INCLUDE_DIRS "include")
++
++install(TARGETS sioclient sioclient_tls
++  EXPORT socket-io-client-target
++  RUNTIME DESTINATION bin
++  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
++  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
++
+ install(FILES ${ALL_HEADERS} 
+-    DESTINATION "${CMAKE_CURRENT_LIST_DIR}/build/include"
++    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/socket-io-client"
+ )
+ 
+-install(TARGETS ${TARGET_LIBRARIES}
+-    DESTINATION "${CMAKE_CURRENT_LIST_DIR}/build/lib/${CMAKE_BUILD_TYPE}"
++configure_package_config_file(
++  "${CMAKE_CURRENT_LIST_DIR}/socket-io-client-config.cmake.in"
++  "${CMAKE_BINARY_DIR}/socket-io-client-config.cmake"
++  INSTALL_DESTINATION share
++  PATH_VARS socket_io_client_INCLUDE_DIRS
+ )
+ 
+-install(FILES ${Boost_LIBRARIES} 
+-    DESTINATION "${CMAKE_CURRENT_LIST_DIR}/build/lib/${CMAKE_BUILD_TYPE}"
+-)
++write_basic_package_version_file(
++  ${CMAKE_CURRENT_BINARY_DIR}/socket-io-client-config-version.cmake
++  VERSION ${MAJOR}.${MINOR}.${PATCH}
++  COMPATIBILITY SameMajorVersion)
++
++set(INSTALL_CMAKE_DIR CMake)
++
++install(
++  FILES 
++    ${CMAKE_CURRENT_BINARY_DIR}/socket-io-client-config.cmake
++    ${CMAKE_CURRENT_BINARY_DIR}/socket-io-client-config-version.cmake
++  DESTINATION 
++    ${INSTALL_CMAKE_DIR})
++
++
++install(EXPORT socket-io-client-target NAMESPACE SocketIo:: 
++  DESTINATION ${INSTALL_CMAKE_DIR})

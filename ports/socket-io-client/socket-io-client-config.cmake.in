@@ -1,0 +1,5 @@
+@PACKAGE_INIT@
+
+set_and_check(socket_io_client_INCLUDE_DIRS "@PACKAGE_socket_io_client_INCLUDE_DIRS@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/socket-io-client-target.cmake")
