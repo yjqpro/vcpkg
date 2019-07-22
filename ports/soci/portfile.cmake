@@ -5,6 +5,8 @@ vcpkg_from_github(
     REF ac3aa20d238d1ce1c7bcfffa4c4ce557c5c12351
     SHA512 b334f03945a84154a1d0b5c3b1eee4e288225a0a76446316bf3878cc4afc630bd1b31eab23f78ce5e3b2dbf8490c36d6fdcf48f25f9806004111852d7efbdf15
     HEAD_REF master
+	PATCHES
+        mysql-include-header.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic" SOCI_DYNAMIC)
