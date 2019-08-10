@@ -1,0 +1,59 @@
+diff --git a/odb/details/shared-ptr/base.cxx b/odb/details/shared-ptr/base.cxx
+index b95797b..4249185 100644
+--- a/odb/details/shared-ptr/base.cxx
++++ b/odb/details/shared-ptr/base.cxx
+@@ -54,7 +54,7 @@ namespace odb
+ }
+ 
+ void*
+-operator new (size_t n, odb::details::share s) throw (std::bad_alloc)
++operator new (size_t n, odb::details::share s) throw ()
+ {
+   if (s == odb::details::shared)
+   {
+diff --git a/odb/details/shared-ptr/base.hxx b/odb/details/shared-ptr/base.hxx
+index 4a38945..48bb30d 100644
+--- a/odb/details/shared-ptr/base.hxx
++++ b/odb/details/shared-ptr/base.hxx
+@@ -35,7 +35,7 @@ namespace odb
+ }
+ 
+ LIBODB_EXPORT void*
+-operator new (std::size_t, odb::details::share) throw (std::bad_alloc);
++operator new (std::size_t, odb::details::share) throw ();
+ 
+ LIBODB_EXPORT void
+ operator delete (void*, odb::details::share) throw ();
+@@ -62,10 +62,10 @@ namespace odb
+       _ref_count () const;
+ 
+       void*
+-      operator new (std::size_t) throw (std::bad_alloc);
++      operator new (std::size_t) throw ();
+ 
+       void*
+-      operator new (std::size_t, share) throw (std::bad_alloc);
++      operator new (std::size_t, share) throw ();
+ 
+       void
+       operator delete (void*, share) throw ();
+diff --git a/odb/details/shared-ptr/base.ixx b/odb/details/shared-ptr/base.ixx
+index 9bf7c94..bc9b61e 100644
+--- a/odb/details/shared-ptr/base.ixx
++++ b/odb/details/shared-ptr/base.ixx
+@@ -64,13 +64,13 @@ namespace odb
+     }
+ 
+     inline void* shared_base::
+-    operator new (std::size_t n) throw (std::bad_alloc)
++    operator new (std::size_t n) throw ()
+     {
+       return ::operator new (n);
+     }
+ 
+     inline void* shared_base::
+-    operator new (std::size_t n, share) throw (std::bad_alloc)
++    operator new (std::size_t n, share) throw ()
+     {
+       return ::operator new (n);
+     }
