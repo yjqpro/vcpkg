@@ -1,0 +1,223 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5c6e3509..9df8e7f8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -344,7 +344,7 @@ if(CAF_ENABLE_ADDRESS_SANITIZER AND NOT WIN32)
+ endif()
+ # -pthread is ignored on MacOSX but required on other platforms
+ if(NOT APPLE AND NOT WIN32)
+-    build_string("EXTRA_FLAGS" "-pthread")
++	build_string("EXTRA_FLAGS" "-pthread")
+ endif()
+ # -fPIC generates warnings on MinGW and Cygwin plus extra setup steps needed on MinGW
+ if(MINGW)
+@@ -376,9 +376,7 @@ if(CAF_IOS_DEPLOYMENT_TARGET)
+   endif()
+ endif()
+ # check if the user provided CXXFLAGS, set defaults otherwise
+-if(NOT CMAKE_CXX_FLAGS)
+-  set(CMAKE_CXX_FLAGS                   "-std=c++11 -Wextra -Wall -pedantic ${EXTRA_FLAGS}")
+-endif()
++set(CMAKE_CXX_FLAGS                   "-std=c++11 -Wextra -Wall -pedantic -fpic ${EXTRA_FLAGS}")
+ if (NOT "${CMAKE_CXX_FLAGS}" MATCHES "-std=")
+   message(STATUS "Supplied CXXFLAGS do not contain a C++ standard, setting std to c++11")
+   set(CMAKE_CXX_FLAGS                   "-std=c++11 ${CMAKE_CXX_FLAGS}")
+@@ -659,7 +657,7 @@ message(STATUS "Set release version for all documentation to ${CAF_RELEASE}.")
+ 
+ # -- Setup for building manual and API documentation ---------------------------
+ 
+-add_subdirectory(doc)
++#add_subdirectory(doc)
+ 
+ ################################################################################
+ #                     Add additional project files to GUI                      #
+@@ -668,6 +666,25 @@ add_subdirectory(doc)
+ file(GLOB_RECURSE script_files "scripts/*")
+ add_custom_target(gui_dummy SOURCES configure ${script_files})
+ 
++
++################################################################################
++#                                isntall                                       #
++################################################################################
++include(CMakePackageConfigHelpers)
++
++configure_package_config_file(
++  ${CMAKE_SOURCE_DIR}/cmake/caf-config.cmake.in
++  ${CMAKE_BINARY_DIR}/cmake/caf-config.cmake
++  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}
++)
++
++install(
++  FILES
++    ${CMAKE_BINARY_DIR}/cmake/caf-config.cmake
++  DESTINATION share/caf
++)
++
++
+ ################################################################################
+ #                                print summary                                 #
+ ################################################################################
+diff --git a/libcaf_core/CMakeLists.txt b/libcaf_core/CMakeLists.txt
+index 875a5df0..1ce10354 100644
+--- a/libcaf_core/CMakeLists.txt
++++ b/libcaf_core/CMakeLists.txt
+@@ -167,45 +167,47 @@ list(APPEND LIBCAF_CORE_HDRS
+   "${CMAKE_CURRENT_BINARY_DIR}/caf/detail/build_config.hpp"
+ )
+ 
+-add_custom_target(libcaf_core)
++add_library(core
++	${LIBCAF_CORE_SRCS} 
++	${LIBCAF_CORE_HDRS}
++)
++
++target_include_directories(core PUBLIC
++	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
++	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
++	$<INSTALL_INTERFACE:include>
++)
++
++set_target_properties(core
++	PROPERTIES
++	SOVERSION ${CAF_VERSION}
++	VERSION ${CAF_LIB_VERSION}
++	OUTPUT_NAME caf_core
++)
+ 
+-# build shared library if not compiling static only
+-if (NOT CAF_BUILD_STATIC_ONLY)
+-  add_library(libcaf_core_shared SHARED ${LIBCAF_CORE_SRCS} ${LIBCAF_CORE_HDRS})
+-  target_link_libraries(libcaf_core_shared ${CAF_EXTRA_LDFLAGS})
+-  target_include_directories(libcaf_core_shared PUBLIC
+-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+-    $<INSTALL_INTERFACE:include>
+-  )
+-  set_target_properties(libcaf_core_shared
+-    PROPERTIES
+-    SOVERSION ${CAF_VERSION}
+-    VERSION ${CAF_LIB_VERSION}
+-    OUTPUT_NAME caf_core
+-  )
+-  install(TARGETS libcaf_core_shared
+-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+-  )
+-  add_dependencies(libcaf_core_shared libcaf_core)
+-endif ()
+ 
+-# build static library only if --build-static or --build-static-only was set
+-if (CAF_BUILD_STATIC_ONLY OR CAF_BUILD_STATIC)
+-  add_library(libcaf_core_static STATIC ${LIBCAF_CORE_HDRS} ${LIBCAF_CORE_SRCS})
+-  target_link_libraries(libcaf_core_static ${CAF_EXTRA_LDFLAGS})
+-  target_include_directories(libcaf_core_static PUBLIC
+-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+-    $<INSTALL_INTERFACE:include>
+-  )
+-  set_target_properties(libcaf_core_static PROPERTIES OUTPUT_NAME caf_core_static)
+-  install(TARGETS libcaf_core_static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+-  add_dependencies(libcaf_core_static libcaf_core)
+-endif ()
++include(GNUInstallDirs)
++
++install(
++	TARGETS
++		core
++	EXPORT
++		caf-core-targets
++	ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
++	LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
++	RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
++)
++
++install(
++	EXPORT
++		caf-core-targets
++	NAMESPACE
++		Caf::
++	DESTINATION
++		${CMAKE_INSTALL_DATAROOTDIR}/caf
++)
+ 
+ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/caf"
+-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+-        FILES_MATCHING PATTERN "*.hpp"
++	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
++	FILES_MATCHING PATTERN "*.hpp"
+ )
+diff --git a/libcaf_io/CMakeLists.txt b/libcaf_io/CMakeLists.txt
+index 1e17e12c..23715a2e 100644
+--- a/libcaf_io/CMakeLists.txt
++++ b/libcaf_io/CMakeLists.txt
+@@ -51,39 +51,39 @@ set(LIBCAF_IO_SRCS
+   src/policy/udp.cpp
+ )
+ 
+-add_custom_target(libcaf_io)
++add_library(io ${LIBCAF_IO_SRCS} ${LIBCAF_IO_HDRS})
++target_link_libraries(io ${CAF_EXTRA_LDFLAGS} core)
++target_include_directories(io PUBLIC
++  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
++  $<INSTALL_INTERFACE:include>
++)
++set_target_properties(io
++                      PROPERTIES
++                      SOVERSION ${CAF_VERSION}
++                      VERSION ${CAF_LIB_VERSION}
++                      OUTPUT_NAME caf_io)
++include(GNUInstallDirs)
+ 
+-# build shared library if not compiling static only
+-if (NOT CAF_BUILD_STATIC_ONLY)
+-  add_library(libcaf_io_shared SHARED ${LIBCAF_IO_SRCS} ${LIBCAF_IO_HDRS})
+-  target_link_libraries(libcaf_io_shared ${CAF_EXTRA_LDFLAGS} ${CAF_LIBRARY_CORE})
+-  target_include_directories(libcaf_io_shared PUBLIC
+-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+-    $<INSTALL_INTERFACE:include>
+-  )
+-  set_target_properties(libcaf_io_shared
+-                        PROPERTIES
+-                        SOVERSION ${CAF_VERSION}
+-                        VERSION ${CAF_LIB_VERSION}
+-                        OUTPUT_NAME caf_io)
+-  install(TARGETS libcaf_io_shared
+-          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+-          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+-  add_dependencies(libcaf_io_shared libcaf_io)
+-endif ()
++install(
++	TARGETS
++		io
++	EXPORT
++		caf-io-targets
++	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++)
+ 
+-# build static library only if --build-static or --build-static-only was set
+-if (CAF_BUILD_STATIC_ONLY OR CAF_BUILD_STATIC)
+-  add_library(libcaf_io_static STATIC ${LIBCAF_IO_HDRS} ${LIBCAF_IO_SRCS})
+-  target_link_libraries(libcaf_io_static ${CAF_EXTRA_LDFLAGS} ${CAF_LIBRARY_CORE_STATIC})
+-  target_include_directories(libcaf_io_static PUBLIC
+-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+-    $<INSTALL_INTERFACE:include>
+-  )
+-  set_target_properties(libcaf_io_static PROPERTIES OUTPUT_NAME caf_io_static)
+-  install(TARGETS libcaf_io_static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+-  add_dependencies(libcaf_io_static libcaf_io)
+-endif ()
++install(
++	EXPORT
++		caf-io-targets
++	FILE
++		caf-io-targets.cmake
++	NAMESPACE
++		Caf::
++	DESTINATION
++		${CMAKE_INSTALL_DATAROOTDIR}/caf
++)
+ 
+ # install includes
+ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/caf

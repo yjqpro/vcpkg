@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+check_required_components(core)
+check_required_components(io)
+
+if (NOT TARGET Caf::core)
+  include(${CMAKE_CURRENT_LIST_DIR}/caf-core-targets.cmake)
+endif()
+
+if (NOT TARGET Caf::io)
+  include(${CMAKE_CURRENT_LIST_DIR}/caf-io-targets.cmake)
+endif()
