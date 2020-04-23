@@ -9,7 +9,7 @@ vcpkg_from_github(
     PATCHES
         fix-uwp.patch
         fix-ABS_FIL.patch
-        disable-lite.patch
+        #disable-lite.patch
         disable-lite-module.patch
 )
 
